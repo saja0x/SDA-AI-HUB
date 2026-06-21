@@ -1,37 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import './App.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar.jsx';
 import AuthProvider from './AuthContext.jsx';
 import RequireAuth from './components/RequireAuth.jsx';
  
-// صفحات الطالبة الأولى (كما هي بدون تعديل)
+// صفحات الطالبة الأولى
 import HomePage from './Pages/HomePage.jsx';
 import ModelsPage from './Pages/ModelsPage.jsx';
 import LoginPage from './Pages/LoginPage.jsx';
 import AdminDashboard from './Pages/AdminDashboard.jsx';
 import SignupPage from './Pages/SignupPage.jsx';
  
-// صفحات الطالبة الثانية (كما هي بدون تعديل)
+// صفحات الطالبة الثانية
 import ModelDetailPage from './Pages/ModelDetailPage.jsx';
 import ComparisonPage from './Pages/ComparisonPage.jsx';
  
-// صفحاتك (كما هي بدون تعديل)
+// صفحاتك (الطالبة الثالثة)
 import PlaygroundPage from './Pages/PlaygroundPage.jsx';
 import ChatbotPage from './Pages/ChatbotPage.jsx';
 import ModelForm from './components/ModelForm.jsx';
 import BenchmarkPage from './Pages/BenchmarkPage.jsx';
  
+// تغيير: شلنا fetch("/models") من هنا - كان غير مستخدم فعليًا غير لتمرير
+// prop "models" لـ AdminDashboard، وAdminDashboard الحين تجيب بياناتها بنفسها
+// من /admin/models (اللي يرجع كل الموديلات حتى المخفية، ومحمي بتسجيل دخول أدمن).
 function App() {
-  const [models, setModels] = useState([]);
- 
-  useEffect(() => {
-    fetch("http://127.0.0.1:8000/models")
-      .then((res) => res.json())
-      .then((data) => setModels(data))
-      .catch((err) => console.log("API Error:", err));
-  }, []);
- 
   return (
     <AuthProvider>
       <BrowserRouter>
@@ -41,11 +35,22 @@ function App() {
           <Route path="/models" element={<ModelsPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
+ 
+          {/* تغيير: /admin و /create الحين محميين بـ adminOnly - يعني
+              غير مسموح إلا لمستخدم مسجل دخول ودوره "admin" فعليًا */}
           <Route
             path="/admin"
             element={
-              <RequireAuth>
-                <AdminDashboard models={models} />
+              <RequireAuth adminOnly>
+                <AdminDashboard />
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/create"
+            element={
+              <RequireAuth adminOnly>
+                <ModelForm />
               </RequireAuth>
             }
           />
@@ -55,7 +60,6 @@ function App() {
  
           <Route path="/playground" element={<PlaygroundPage />} />
           <Route path="/chatbot" element={<ChatbotPage />} />
-          <Route path="/create" element={<ModelForm />} />
           <Route path="/benchmark" element={<BenchmarkPage />} />
         </Routes>
       </BrowserRouter>

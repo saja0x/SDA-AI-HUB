@@ -1,90 +1,125 @@
+"""
+routers/playground.py
+------------------------
+يخلي المستخدم يجرب يحادث أي موديل ظاهر بالموقع، عن طريق خدمة خارجية
+حقيقية اسمها OpenRouter.
+ 
+تغيير مهم #1: قبل كذا الموديلات كانت تتجاب من ملف ثابت (data.py) يتحمّل
+مرة وحدة بس وقت تشغيل السيرفر. الحين تتجاب من قاعدة البيانات الحقيقية،
+فأي موديل يضيفه/يعدّله/يحذفه الأدمن ينعكس هنا فورًا.
+ 
+تغيير مهم #2: قبل كذا قائمة "model_map" كانت أسماء ثابتة بالكود (9 موديلات
+بس). الحين كل موديل بقاعدة البيانات له حقل اسمه openrouter_id - لو الأدمن
+عبّاه وقت إضافة الموديل، الموديل يقدر "يتكلم" بالبلاي قراوند، ولو تركه
+فاضي يطلع بالقائمة بس يرفض المحادثة برسالة واضحة.
+"""
 import os
 import requests
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from dotenv import load_dotenv
-from data import models
-
+from sqlalchemy.orm import Session
+ 
+from database import SessionLocal
+from models.model import Model
+ 
 load_dotenv()
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
-
+ 
+router = APIRouter()
+ 
+ 
+def get_session():
+    session = SessionLocal()
+    try:
+        yield session
+    finally:
+        session.close()
+ 
+ 
 class MessageRequest(BaseModel):
     message: str
     model: str
-
-router = APIRouter()
-
-# خريطة تربط اسم الموديل عندنا بالاسم التقني اللي يفهمه OpenRouter
-model_map = {
-    "GPT-5.5": "openai/gpt-5.5",                              
-    "GPT-4.1": "openai/gpt-4.1",
-    "Claude Opus 4.7": "anthropic/claude-opus-4.7",
-    "Claude Sonnet 4.6": "anthropic/claude-sonnet-4.6",
-    "Gemini 3.1 Pro": "google/gemini-3.1-pro-preview",        
-    "Gemini 3 Flash": "google/gemini-3-flash-preview",        
-    "DeepSeek V4": "deepseek/deepseek-v3.2",                  
-    "Llama 4 Scout": "meta-llama/llama-4-scout",              
-    "Qwen 3.6": "qwen/qwen3.6-plus",                          
-}
-@router.get("/playground/models")
-def get_models():
-    return models
-
-@router.post("/playground/chat")
-def chat(request: MessageRequest):
-    if request.model == "Text Embedding 3":
-        return {"reply": "هذا الموديل مخصص للبحث الذكي (embeddings) وليس للمحادثة المباشرة."}
-
-    technical_name = model_map.get(request.model)
-
-    if not technical_name:
-        return {"reply": "هذا الموديل غير متاح للمحادثة الحقيقية حالياً."}
-
-    response = requests.post(
-        url="https://openrouter.ai/api/v1/chat/completions",
-        headers={
-            "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-            "Content-Type": "application/json"
-        },
-        json={
-            "model": technical_name,
-            "messages": [
-                {"role": "user", "content": request.message}
-            ],
-            "max_tokens": 500
-        }
-    )
-
-    data = response.json()
-
-    try:
-        reply = data["choices"][0]["message"]["content"]
-    except (KeyError, IndexError):
-        reply = f"خطأ: {data}"
-
-    return {"reply": reply}
-
-
-@router.get("/api/v1/models")
-def get_all_models_public():
-    """
-    Public API endpoint for external access to model metadata.
-    Returns all available AI models with their details.
-    """
+ 
+ 
+def _model_to_dict(m):
     return {
-        "success": True,
-        "count": len(models),
-        "models": models
+        "id": m.id,
+        "name": m.name,
+        "provider": m.provider.name if m.provider else None,
+        "type": m.type,
+        "description": m.description,
+        "openrouter_id": m.openrouter_id,
     }
-
-
+ 
+ 
+@router.get("/playground/models")
+def get_models(session: Session = Depends(get_session)):
+    """يرجع كل الموديلات الظاهرة - يستخدمها ModelSwitcher لبناء أزرار الاختيار."""
+    rows = session.query(Model).filter(Model.visible == True).all()  # noqa: E712
+    return [_model_to_dict(m) for m in rows]
+ 
+ 
+@router.post("/playground/chat")
+def chat(request: MessageRequest, session: Session = Depends(get_session)):
+    model_row = session.query(Model).filter(Model.name == request.model).first()
+ 
+    if not model_row:
+        return {"reply": "هذا الموديل غير موجود."}
+ 
+    if model_row.type == "embedding":
+        return {"reply": "هذا الموديل مخصص للبحث الذكي (embeddings) وليس للمحادثة المباشرة."}
+ 
+    technical_name = model_row.openrouter_id
+ 
+    if not technical_name:
+        return {
+            "reply": "هذا الموديل غير متاح للمحادثة الحقيقية حالياً "
+                     "(ما له معرّف OpenRouter - راجعي الأدمن لإضافته)."
+        }
+ 
+    if not OPENROUTER_API_KEY:
+        return {"reply": "⚠️ ما فيه مفتاح OpenRouter مُعد بملف .env بالباكند."}
+ 
+    try:
+        response = requests.post(
+            url="https://openrouter.ai/api/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": technical_name,
+                "messages": [{"role": "user", "content": request.message}],
+                "max_tokens": 500
+            },
+            timeout=30,
+        )
+        data = response.json()
+        reply = data["choices"][0]["message"]["content"]
+    except requests.RequestException as e:
+        return {"reply": f"تعذر الاتصال بخدمة OpenRouter: {e}"}
+    except (KeyError, IndexError):
+        return {"reply": f"خطأ من الخدمة: {data}"}
+ 
+    return {"reply": reply}
+ 
+ 
+@router.get("/api/v1/models")
+def get_all_models_public(session: Session = Depends(get_session)):
+    """Public API endpoint - يرجع كل الموديلات الظاهرة بس (مو المخفية)."""
+    rows = session.query(Model).filter(Model.visible == True).all()  # noqa: E712
+    models = [_model_to_dict(m) for m in rows]
+    return {"success": True, "count": len(models), "models": models}
+ 
+ 
 @router.get("/api/v1/models/{model_name}")
-def get_model_by_name(model_name: str):
-    """
-    Public API endpoint to get details of a specific model by name.
-    """
-    for model in models:
-        if model["name"].lower() == model_name.lower():
-            return {"success": True, "model": model}
-
+def get_model_by_name(model_name: str, session: Session = Depends(get_session)):
+    model_row = (
+        session.query(Model)
+        .filter(Model.name.ilike(model_name), Model.visible == True)  # noqa: E712
+        .first()
+    )
+    if model_row:
+        return {"success": True, "model": _model_to_dict(model_row)}
     return {"success": False, "message": "Model not found"}

@@ -3,9 +3,12 @@ import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../AuthContext.jsx";
  
+// تغيير: روابط "Add Model" و"Admin" الحين تطلع بس لو المستخدم مسجل دخول
+// ودوره "admin" فعليًا - قبل كذا كانت تطلع للجميع حتى لو ما يقدرون يستخدمونها.
 function Navbar() {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
+  const isAdmin = user?.role === "admin";
  
   const handleLogout = () => {
     logout();
@@ -21,8 +24,8 @@ function Navbar() {
       <Link to="/compare">Compare</Link>
       <Link to="/playground">Playground</Link>
       <Link to="/chatbot">Chatbot</Link>
-      <Link to="/create">Add Model</Link>
-      <Link to="/admin">Admin</Link>
+      {isAdmin && <Link to="/create">Add Model</Link>}
+      {isAdmin && <Link to="/admin">Admin</Link>}
       <Link to="/benchmark">Benchmark</Link>
  
       {user ? (

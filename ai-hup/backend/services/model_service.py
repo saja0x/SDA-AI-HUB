@@ -1,7 +1,7 @@
 from database import SessionLocal
 from models.model import Model
-
-
+ 
+ 
 def _model_to_dict(m: Model) -> dict:
     return {
         "id": m.id,
@@ -23,9 +23,10 @@ def _model_to_dict(m: Model) -> dict:
         "release_date": m.release_date,
         "version": m.version,
         "visible": m.visible,
+        "openrouter_id": m.openrouter_id,
     }
-
-
+ 
+ 
 def get_all_models():
     """الموديلات الظاهرة بس (اللي visible=True) - تستخدم بالصفحات العامة"""
     session = SessionLocal()
@@ -34,8 +35,8 @@ def get_all_models():
         return [_model_to_dict(m) for m in rows]
     finally:
         session.close()
-
-
+ 
+ 
 def search_models(q):
     models = get_all_models()
     return [

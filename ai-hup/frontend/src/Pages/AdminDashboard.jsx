@@ -1,77 +1,102 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { Link } from "react-router-dom";
 import TagManager from "../components/TagManager.jsx";
 import VisibilityToggle from "../components/VisibilityToggle.jsx";
-
-function AdminDashboard({ models = [] }) {
-  // نسخة محلية من الموديلات عشان نقدر نحذف/نعدّل بالواجهة فورًا
-  const [localModels, setLocalModels] = useState(models);
-  const [hiddenIds, setHiddenIds] = useState(new Set());
+import { AuthContext } from "../AuthContext.jsx";
+ 
+// تغيير: التوكن الحين يجي من "token" بالسياق مباشرة (مو "user.token" -
+// لأن AuthContext الجديد يخزن التوكن لحاله، منفصل عن بيانات المستخدم).
+function AdminDashboard() {
+  const { token } = useContext(AuthContext);
+  const [models, setModels] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState(null);
   const [editName, setEditName] = useState("");
   const [editProvider, setEditProvider] = useState("");
-
-  // لما الموديلات توصل من الـ API بـ App.jsx، نحدّث نسختنا المحلية
-  useEffect(() => {
-    setLocalModels(models);
-  }, [models]);
-
-  const toggleVisible = (modelId) => {
-    setHiddenIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(modelId)) {
-        next.delete(modelId);
-      } else {
-        next.add(modelId);
-      }
-      return next;
-    });
+ 
+  const authHeaders = {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
   };
-
+ 
+  const loadModels = () => {
+    setLoading(true);
+    fetch("http://127.0.0.1:8000/admin/models", { headers: authHeaders })
+      .then((res) => res.json())
+      .then((data) => setModels(Array.isArray(data) ? data : []))
+      .catch((err) => console.log("API Error:", err))
+      .finally(() => setLoading(false));
+  };
+ 
+  useEffect(() => {
+    loadModels();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+ 
+  const toggleVisible = (model) => {
+    fetch(`http://127.0.0.1:8000/admin/models/${model.id}`, {
+      method: "PUT",
+      headers: authHeaders,
+      body: JSON.stringify({
+        name: model.name,
+        provider: model.provider,
+        visible: !model.visible,
+      }),
+    })
+      .then((res) => res.json())
+      .then(() => loadModels())
+      .catch((err) => console.log("API Error:", err));
+  };
+ 
   const startEdit = (model) => {
     setEditingId(model.id);
     setEditName(model.name);
     setEditProvider(model.provider);
   };
-
+ 
   const cancelEdit = () => setEditingId(null);
-
+ 
   const saveEdit = (modelId) => {
     fetch(`http://127.0.0.1:8000/admin/models/${modelId}`, {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: authHeaders,
       body: JSON.stringify({ name: editName, provider: editProvider }),
     })
       .then((res) => res.json())
       .then(() => {
-        setLocalModels((prev) =>
-          prev.map((m) =>
-            m.id === modelId ? { ...m, name: editName, provider: editProvider } : m
-          )
-        );
         setEditingId(null);
+        loadModels();
       })
       .catch((err) => console.log("API Error:", err));
   };
-
+ 
   const handleDelete = (modelId) => {
     fetch(`http://127.0.0.1:8000/admin/models/${modelId}`, {
       method: "DELETE",
+      headers: authHeaders,
     })
       .then((res) => res.json())
-      .then(() => {
-        setLocalModels((prev) => prev.filter((m) => m.id !== modelId));
-      })
+      .then(() => loadModels())
       .catch((err) => console.log("API Error:", err));
   };
-
+ 
+  if (loading) {
+    return (
+      <div className="admin-container">
+        <h2>Admin Dashboard</h2>
+        <p>Loading…</p>
+      </div>
+    );
+  }
+ 
   return (
     <div className="admin-container">
       <h2>Admin Dashboard</h2>
-
-      {localModels.map((model) => {
-        const isVisible = !hiddenIds.has(model.id);
+      <p><Link to="/create">+ Add New Model</Link></p>
+ 
+      {models.map((model) => {
         const isEditing = editingId === model.id;
-
+ 
         return (
           <div key={model.id} className="admin-model-row">
             {isEditing ? (
@@ -93,13 +118,20 @@ function AdminDashboard({ models = [] }) {
               </div>
             ) : (
               <>
-                <h3>{model.name}</h3>
+                <h3>
+                  {model.name}
+                  {!model.visible && (
+                    <span style={{ opacity: 0.6, fontSize: "0.65em", marginRight: 8 }}>
+                      (Hidden)
+                    </span>
+                  )}
+                </h3>
                 <div>
                   <button onClick={() => startEdit(model)}>Edit</button>
                   <button onClick={() => handleDelete(model.id)}>Delete</button>
                   <VisibilityToggle
-                    visible={isVisible}
-                    setVisible={() => toggleVisible(model.id)}
+                    visible={model.visible}
+                    setVisible={() => toggleVisible(model)}
                   />
                 </div>
               </>
@@ -107,11 +139,11 @@ function AdminDashboard({ models = [] }) {
           </div>
         );
       })}
-
+ 
       <h3>Manage Tags</h3>
       <TagManager />
     </div>
   );
 }
-
+ 
 export default AdminDashboard;

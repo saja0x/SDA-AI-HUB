@@ -1,4 +1,3 @@
- 
 {/*  واجهة محادثة الشات بوت يسأل ويرشح الموديل المناسب > شات بوت*/}
  
 import React, { useState } from 'react';
@@ -6,34 +5,43 @@ import './ChatInterface.css'
 import Sparkle from '../assets/Sparkle.png';
  
  
-function RecommenderChat() { 
+function RecommenderChat() {
  
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
  
-  // ملاحظة جديدة: متغير step يحفظ وين نحن بالمحادثة (يسأل عن الاستخدام، أو الميزانية، أو خلص) - يستخدم بالأزرار الجديدة فقط، ما يأثر على الكتابة الحرة
+  // step يحفظ وين نحن بالمحادثة (يسأل عن الاستخدام، أو الميزانية، أو خلص) - يستخدم بالأزرار الجديدة فقط، ما يأثر على الكتابة الحرة
   const [step, setStep] = useState('useCase');
  
   const handleSubmit = (e) => {
-  e.preventDefault();
-  if (!input.trim()) return;
-  
-  fetch("http://127.0.0.1:8000/chatbot/recommend", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ use_case: input })
-  })
-    .then(res => res.json())
-    .then(data => {
-      setMessages([...messages, 
-        { text: input, sender: "user" },
-        { text: data.recommended_model, sender: "bot" }
-      ]);
-      setInput('');
-    });
-};
+    e.preventDefault();
+    if (!input.trim()) return;
  
-  // ملاحظة جديدة: دالة جديدة بالكامل تتعامل مع ضغط أزرار التوصية الشخصية (مو الكتابة الحرة) - تسأل عن الاستخدام أول، وبعدها الميزانية، وبالأخير ترسل الطلب لنفس الإند بوينت الموجود
+    const userText = input;
+    setInput('');
+ 
+    fetch("http://127.0.0.1:8000/chatbot/recommend", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ use_case: userText })
+    })
+      .then(res => res.json())
+      .then(data => {
+        setMessages(prev => [...prev,
+          { text: userText, sender: "user" },
+          { text: data.recommended_model, sender: "bot" }
+        ]);
+      })
+      // تغيير: ضفنا catch - قبل كذا لو السيرفر طاح، الرسالة "تختفي" بصمت
+      .catch(() => {
+        setMessages(prev => [...prev,
+          { text: userText, sender: "user" },
+          { text: "⚠️ تعذر الاتصال بالسيرفر.", sender: "bot" }
+        ]);
+      });
+  };
+ 
+  // دالة تتعامل مع ضغط أزرار التوصية الشخصية (مو الكتابة الحرة) - تسأل عن الاستخدام أول، وبعدها الميزانية، وبالأخير ترسل الطلب لنفس الإند بوينت الموجود
   const handleOptionClick = (text) => {
     if (step === 'useCase') {
       setMessages(prev => [...prev,
@@ -54,11 +62,18 @@ function RecommenderChat() {
             { text: data.recommended_model, sender: "bot" }
           ]);
           setStep('done');
+        })
+        .catch(() => {
+          setMessages(prev => [...prev,
+            { text: text, sender: "user" },
+            { text: "⚠️ تعذر الاتصال بالسيرفر.", sender: "bot" }
+          ]);
+          setStep('done');
         });
     }
   };
  
-  // ملاحظة جديدة: دالة جديدة بالكامل تعيد ضبط المحادثة من جديد لو المستخدم ضغط "جربي توصية جديدة" بعد ما خلص
+  // دالة تعيد ضبط المحادثة من جديد لو المستخدم ضغط "جربي توصية جديدة" بعد ما خلص
   const handleRestart = () => {
     setMessages([]);
     setStep('useCase');
@@ -86,7 +101,6 @@ function RecommenderChat() {
         </div>
       ))}
  
-      {/* ملاحظة جديدة: جزء جديد بالكامل يعرض أزرار الاختيار جوا نفس صندوق الشات (Chat-box) - يظهر فقط حسب الخطوة الحالية (step)، وما يحذف أو يغير مربع الكتابة الحرة تحت */}
       {step === 'useCase' && (
         <div className='quick-options'>
           <button onClick={() => handleOptionClick('كود')}>كود</button>

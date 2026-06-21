@@ -2,15 +2,15 @@ from sqlalchemy import Column, Integer, String, Float, Boolean, JSON, ForeignKey
 from sqlalchemy.orm import relationship
 from database import Base
 from models.provider import Provider  # noqa: F401  (لازم يكون مستورد عشان علاقة relationship تشتغل أيًا كان ترتيب الاستيراد)
-
-
+ 
+ 
 class Model(Base):
     __tablename__ = "models"
-
+ 
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True, nullable=False)
     provider_id = Column(Integer, ForeignKey("providers.id"))
-
+ 
     type = Column(String, default="LLM")
     open_source = Column(Boolean, default=False)
     description = Column(String, nullable=True)
@@ -27,5 +27,9 @@ class Model(Base):
     release_date = Column(String, nullable=True)
     version = Column(String, nullable=True)
     visible = Column(Boolean, default=True)
-
+ 
+    # الاسم التقني اللي تفهمه خدمة OpenRouter لهذا الموديل (مثال: "anthropic/claude-sonnet-4.6")
+    # اختياري - لو فاضي، الموديل ما يقدر "يتكلم" بالبلاي قراوند رغم إنه يطلع بالموقع
+    openrouter_id = Column(String, nullable=True)
+ 
     provider = relationship("Provider", backref="models")

@@ -1,31 +1,33 @@
-import { useState } from "react";
-import React from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
-
-// صفحة إنشاء حساب جديد - تتصل بـ /register الموجود مسبقًا بالباك اند (بدون تعديل عليه)
+import { AuthContext } from "../AuthContext.jsx";
+ 
+// قائمة اختيار الدور (Role) موجودة هنا عشان نقدر نسوي حسابي أدمن وuser
+// ونجرب صلاحيات لوحة التحكم بسهولة وقت العرض - نفس فكرة ملف الأستاذ
+// بالضبط. بمشروع حقيقي السيرفر هو اللي يحدد الدور، مو المستخدم نفسه
+// وقت التسجيل (وإلا أي حد يقدر يخلي نفسه أدمن).
 function SignupPage() {
+    const { register } = useContext(AuthContext);
+    const navigate = useNavigate();
+ 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [accountType, setAccountType] = useState("user");
+    const [role, setRole] = useState("user");
     const [error, setError] = useState("");
-    const [success, setSuccess] = useState(false);
-    const navigate = useNavigate();
-
-    const handleSubmit = (e) => {
+ 
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setError("");
-
-        fetch(`http://127.0.0.1:8000/register?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`, {
-            method: "POST",
-        })
-            .then((res) => res.json())
-            .then(() => {
-                setSuccess(true);
-                setTimeout(() => navigate("/login"), 1200);
-            })
-            .catch(() => setError("تعذر إنشاء الحساب، حاولي مرة ثانية"));
+ 
+        try {
+            // register() تسجل دخول تلقائيًا بعد التسجيل (شوفي AuthContext)
+            await register(email, password, role);
+            navigate("/");
+        } catch (err) {
+            setError(err.message);
+        }
     };
-
+ 
     return (
         <div className="login-container">
             <h1>Create Account</h1>
@@ -39,27 +41,23 @@ function SignupPage() {
                 />
                 <input
                     type="password"
-                    placeholder="Enter your password (min 8 characters)"
+                    placeholder="Enter your password (min 6 characters)"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    minLength={8}
+                    minLength={6}
                     required
                 />
-
-                {/* نوع الحساب: حاليًا للعرض فقط لأن /register بالباك اند يستقبل
-                    email و password بس. لو احتجتوه يُحفظ فعليًا لازم تضاف
-                    معامل role لراوتر auth.py وللخدمة auth_service.py */}
-                <select
-                    value={accountType}
-                    onChange={(e) => setAccountType(e.target.value)}
-                >
-                    <option value="user">Regular User</option>
-                    <option value="admin">Admin</option>
-                </select>
-
+ 
+                <label className="role-select">
+                    Role
+                    <select value={role} onChange={(e) => setRole(e.target.value)}>
+                        <option value="user">user</option>
+                        <option value="admin">admin</option>
+                    </select>
+                </label>
+ 
                 {error && <p className="form-error">{error}</p>}
-                {success && <p className="form-success">Account created! Redirecting to login…</p>}
-
+ 
                 <button type="submit">Sign Up</button>
             </form>
             <p className="auth-switch">
@@ -68,5 +66,5 @@ function SignupPage() {
         </div>
     );
 }
-
+ 
 export default SignupPage;
