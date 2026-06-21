@@ -1,123 +1,135 @@
 .ChatInterface {
-    flex:1;
-  background-color: #ffffff; /* الصندوق أبيض بالكامل ليبرز */
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--glow-soft);
     display: flex;
     flex-direction: column;
     overflow: hidden;
     height: 500px;
-    
 }
- .chat-header {
-    background:#e7c4dd;
+ 
+.chat-header {
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border-soft);
     padding: 15px 20px;
 }
-
- .head-info {
+ 
+.head-info {
     display: flex;
     gap: 10px;
     align-items: center;
 }
-
-.logo-text{
-    color:#fff;
+ 
+.logo-text {
+    color: var(--text-hi);
     font-size: 18px;
 }
-
+ 
 .Chat-box {
     flex: 1;
     padding: 20px;
     overflow-y: auto;
 }
-
-.AimessageAppear{
+ 
+.AimessageAppear {
     display: flex;
     gap: 11px;
     align-items: center;
-    
 }
-
-.messageAi{
-    background: #f3f1f7;
-  padding: 10px 16px;
+ 
+.messageAi {
+    background: var(--surface-2);
+    color: var(--text-hi);
+    padding: 10px 16px;
     border-radius: 18px;
-    font-size: 14px
-    
-
+    font-size: 14px;
 }
-
+ 
 .usermessage {
-    background: #f3f1f7; 
+    background: var(--grad-primary);
+    color: var(--text-hi);
     padding: 10px 16px;
     border-radius: 18px 18px 0px 18px;
     font-size: 14px;
-    width: fit-content;    
+    width: fit-content;
     margin: 10px 0 10px auto;
-     
 }
-
-
-.Chatfooter{
-   padding: 15px 20px;
-    border-top: 1px solid #ffe4e6;
+ 
+.Chatfooter {
+    padding: 15px 20px;
+    border-top: 1px solid var(--border-soft);
 }
-
-.chat-form{
-   display: flex;
+ 
+.chat-form {
+    display: flex;
     gap: 10px;
 }
-
-.messageInput{
-flex: 1;
+ 
+.messageInput {
+    flex: 1;
     padding: 12px;
-    border: 1px solid #fbcfe8;
-    border-radius: 25px;
+    background: var(--surface-2);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-pill);
     outline: none;
     font-size: 14px;
-    
+    color: var(--text-hi);
 }
-
+ 
+.messageInput::placeholder {
+    color: var(--text-faint);
+}
+ 
 .Sparkle {
     width: 40px;
     height: 40px;
-    object-fit: contain; 
+    object-fit: contain;
     border-radius: 50%;
 }
-
-.send{
-   background-color:#eb9fd5;
-    color: #fff;
-   border: none;
+ 
+.send {
+    background: var(--grad-primary);
+    color: var(--text-hi);
+    border: none;
     padding: 0 24px;
-    border-radius: 25px;
+    border-radius: var(--radius-pill);
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-
+    transition: transform 0.2s var(--ease), opacity 0.2s var(--ease);
 }
-
-
+ 
+.send:hover {
+    transform: translateY(-1px);
+}
+ 
+.send:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+ 
 .quick-options {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
   margin-top: 15px;
 }
-
+ 
 .quick-options button {
-  background-color: #f3f1f7;
-  color: #9d174d;
-  border: 1px solid #fbcfe8;
+  background: var(--surface-2);
+  color: var(--violet-soft);
+  border: 1px solid var(--border-soft);
   padding: 10px 18px;
-  border-radius: 18px;
+  border-radius: var(--radius-pill);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s var(--ease), color 0.2s var(--ease);
 }
-
+ 
 .quick-options button:hover {
-  background-color: #eb9fd5;
-  color: #fff;
+  background: var(--grad-primary);
+  color: var(--text-hi);
 }

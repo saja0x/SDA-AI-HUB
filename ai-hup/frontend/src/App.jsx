@@ -1,30 +1,24 @@
 import React from 'react';
 import './App.css';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar.jsx';
 import AuthProvider from './AuthContext.jsx';
 import RequireAuth from './components/RequireAuth.jsx';
  
-// صفحات الطالبة الأولى
 import HomePage from './Pages/HomePage.jsx';
 import ModelsPage from './Pages/ModelsPage.jsx';
 import LoginPage from './Pages/LoginPage.jsx';
 import AdminDashboard from './Pages/AdminDashboard.jsx';
 import SignupPage from './Pages/SignupPage.jsx';
  
-// صفحات الطالبة الثانية
 import ModelDetailPage from './Pages/ModelDetailPage.jsx';
 import ComparisonPage from './Pages/ComparisonPage.jsx';
  
-// صفحاتك (الطالبة الثالثة)
 import PlaygroundPage from './Pages/PlaygroundPage.jsx';
 import ChatbotPage from './Pages/ChatbotPage.jsx';
 import ModelForm from './components/ModelForm.jsx';
 import BenchmarkPage from './Pages/BenchmarkPage.jsx';
  
-// تغيير: شلنا fetch("/models") من هنا - كان غير مستخدم فعليًا غير لتمرير
-// prop "models" لـ AdminDashboard، وAdminDashboard الحين تجيب بياناتها بنفسها
-// من /admin/models (اللي يرجع كل الموديلات حتى المخفية، ومحمي بتسجيل دخول أدمن).
 function App() {
   return (
     <AuthProvider>
@@ -36,8 +30,6 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
  
-          {/* تغيير: /admin و /create الحين محميين بـ adminOnly - يعني
-              غير مسموح إلا لمستخدم مسجل دخول ودوره "admin" فعليًا */}
           <Route
             path="/admin"
             element={
@@ -61,6 +53,10 @@ function App() {
           <Route path="/playground" element={<PlaygroundPage />} />
           <Route path="/chatbot" element={<ChatbotPage />} />
           <Route path="/benchmark" element={<BenchmarkPage />} />
+ 
+          {/* تغيير: أي رابط غير موجود يرجّع للصفحة الرئيسية بدل صفحة فاضية
+              (فكرة من ملف الأستاذ - "catch-all" route) */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

@@ -3,8 +3,8 @@ import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../AuthContext.jsx";
  
-// تغيير: روابط "Add Model" و"Admin" الحين تطلع بس لو المستخدم مسجل دخول
-// ودوره "admin" فعليًا - قبل كذا كانت تطلع للجميع حتى لو ما يقدرون يستخدمونها.
+// تغيير: ضفنا عرض إيميل المستخدم المسجل دخول (فكرة من ملف الأستاذ) -
+// يعطي تأكيد بصري واضح "أنتِ مسجلة دخول بهذا الحساب".
 function Navbar() {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -29,7 +29,12 @@ function Navbar() {
       <Link to="/benchmark">Benchmark</Link>
  
       {user ? (
-        <button onClick={handleLogout}>Logout</button>
+        <>
+          <span style={{ color: "var(--text-faint)", fontSize: "13px", marginInlineEnd: "8px" }}>
+            {user.email}
+          </span>
+          <button onClick={handleLogout}>Logout</button>
+        </>
       ) : (
         <Link to="/login">Login</Link>
       )}

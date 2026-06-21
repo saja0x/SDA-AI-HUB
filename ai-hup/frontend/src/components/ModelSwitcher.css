@@ -2,23 +2,32 @@
   display: flex;
   gap: 12px;
   margin-top: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
  
 .AllAi button {
-  background-color: #edafd4;
-  color: #9d174d;
-  border: none;
-  padding:12px 20px;
-  border-radius: 8px;
-  font-size: 16px;
+  background: var(--surface-2);
+  color: var(--text-lo);
+  border: 1px solid var(--border-soft);
+  padding: 12px 20px;
+  border-radius: var(--radius-pill);
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s, transform 0.1s;
+  transition: background 0.2s var(--ease), color 0.2s var(--ease), transform 0.1s var(--ease);
 }
  
 .AllAi button:hover {
-  background-color:#fce7f3;
-  color: #db2777; 
+  background: var(--surface-3);
+  color: var(--text-hi);
+}
+ 
+/* الموديل المختار حاليًا يطلع بتدرج بنفسجي مميز */
+.AllAi button.active {
+  background: var(--grad-primary);
+  color: var(--text-hi);
+  box-shadow: var(--glow-violet);
 }
  
 .AllAi button:active {

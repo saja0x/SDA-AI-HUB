@@ -1,26 +1,28 @@
 .instructions-card {
-    background-color: #ffffff;
-    border: 1px solid #ffe4e6;
-    border-radius: 12px;
-    padding: 20px;
-    width: 300px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  color: var(--text-hi);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  margin-bottom: 12px;
 }
-
+ 
 .instructions-card h3 {
-    font-size: 16px;
-    color: #881337;
-    margin-bottom: 12px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: var(--text-lo);
 }
-
+ 
 .instructions-card ul {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
-
+ 
 .instructions-card li {
-    font-size: 14px;
-    color: #4b5563;
+  padding: 6px 0;
+  font-size: 13px;
+  color: var(--text-lo);
+  border-bottom: 0.5px solid var(--border-soft);
 }
