@@ -1,19 +1,25 @@
 .ChatInterface {
-    flex: 1;
+    width: 100%;
+    max-width: 480px;
     background: var(--surface);
     border: 1px solid var(--border-soft);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-md);
     box-shadow: var(--glow-soft);
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    height: 500px;
+    /* تغيير: height + max-height مع بعض، و align-self يمنعها تتمدد
+       حسب طول العمود المجاور لها بالصفحة - هذا السبب الفعلي اللي كان
+       يخلي البطاقة تطلع طويلة جدًا */
+    height: 480px;
+    max-height: 480px;
+    align-self: flex-start;
 }
  
 .chat-header {
-    background: var(--surface-2);
-    border-bottom: 1px solid var(--border-soft);
+    background: var(--grad-primary);
     padding: 15px 20px;
+    flex-shrink: 0;
 }
  
 .head-info {
@@ -23,14 +29,21 @@
 }
  
 .logo-text {
-    color: var(--text-hi);
+    color: #fff;
     font-size: 18px;
+    font-weight: 600;
 }
  
 .Chat-box {
     flex: 1;
+    /* تغيير: min-height: 0 ضروري عشان عنصر الـflex هذا يقدر "يصغّر"
+       ويسكرول بدل ما يدفع البطاقة كلها تكبر بلا حدود */
+    min-height: 0;
     padding: 20px;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
  
 .AimessageAppear {
@@ -49,17 +62,18 @@
  
 .usermessage {
     background: var(--grad-primary);
-    color: var(--text-hi);
+    color: #fff;
     padding: 10px 16px;
     border-radius: 18px 18px 0px 18px;
     font-size: 14px;
     width: fit-content;
-    margin: 10px 0 10px auto;
+    margin: 0 0 0 auto;
 }
  
 .Chatfooter {
     padding: 15px 20px;
     border-top: 1px solid var(--border-soft);
+    flex-shrink: 0;
 }
  
 .chat-form {
@@ -71,11 +85,11 @@
     flex: 1;
     padding: 12px;
     background: var(--surface-2);
-    border: 1px solid var(--border-soft);
-    border-radius: var(--radius-pill);
+    color: var(--text-hi);
+    border: 1px solid var(--border);
+    border-radius: 25px;
     outline: none;
     font-size: 14px;
-    color: var(--text-hi);
 }
  
 .messageInput::placeholder {
@@ -85,20 +99,22 @@
 .Sparkle {
     width: 40px;
     height: 40px;
-    object-fit: contain;
+    object-fit: cover;
     border-radius: 50%;
+    flex-shrink: 0;
 }
  
 .send {
     background: var(--grad-primary);
-    color: var(--text-hi);
+    color: #fff;
     border: none;
     padding: 0 24px;
-    border-radius: var(--radius-pill);
+    border-radius: 25px;
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-    transition: transform 0.2s var(--ease), opacity 0.2s var(--ease);
+    transition: transform 0.2s var(--ease);
+    flex-shrink: 0;
 }
  
 .send:hover {
@@ -111,25 +127,33 @@
 }
  
 .quick-options {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 4px;
 }
  
 .quick-options button {
-  background: var(--surface-2);
-  color: var(--violet-soft);
-  border: 1px solid var(--border-soft);
-  padding: 10px 18px;
-  border-radius: var(--radius-pill);
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s var(--ease), color 0.2s var(--ease);
+    background: var(--surface-2);
+    color: var(--violet-soft);
+    border: 1px solid var(--border);
+    padding: 10px 18px;
+    border-radius: 18px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
 }
  
 .quick-options button:hover {
-  background: var(--grad-primary);
-  color: var(--text-hi);
+    background: var(--grad-primary);
+    color: #fff;
+}
+ 
+@media (max-width: 768px) {
+    .ChatInterface {
+        max-width: 100%;
+        height: 420px;
+        max-height: 420px;
+    }
 }

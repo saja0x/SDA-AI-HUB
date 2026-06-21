@@ -1,32 +1,38 @@
 import React from 'react';
 import './ModelInstructions.css';
  
-// تغيير: كان هذا الملف يستورد './SampleCodeBlock.css' بالغلط (ملف ثاني
-// تمامًا)، فصار فيه تعريفين متضاربين لنفس الكلاس ".instructions-card"
-// بملفين مختلفين. الحين يستورد ملفه الصحيح، وألوانه موحّدة مع باقي الموقع.
-//
-// التعليمات تتولّد حسب "مزوّد" الموديل (provider)، فتشتغل لأي موديل
-// موجود أو يضاف مستقبلاً، مو بس أسماء ثابتة قديمة.
+function CheckIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
+      <path d="M5 13l4 4L19 7" stroke="var(--violet-soft)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+ 
+// تعليمات استخدام عامة حسب نوع/مزوّد الموديل، تشتغل لأي موديل (مو بس 3 أسماء ثابتة).
 function ModelInstructions({ model }) {
   if (!model) return null;
  
   const providerTips = {
-    OpenAI: ["دقيق بالتحليل والمنطق", "يدعم استدعاء الأدوات (tools)"],
-    Anthropic: ["قوي بفهم النصوص الطويلة", "يهتم بالدقة والأمان بالردود"],
-    Google: ["سريع جدًا بالرد", "يدعم الصور والنصوص مع بعض"],
-    DeepSeek: ["تكلفة منخفضة مقارنة بالأداء", "مناسب للمهام التقنية"],
-    Meta: ["مفتوح المصدر", "مناسب للتجربة والتعديل المحلي"],
-    Alibaba: ["دعم قوي للغة العربية والصينية", "أسعار منافسة"],
+    OpenAI: ["Strong at analysis and reasoning", "Supports tool calling"],
+    Anthropic: ["Great at understanding long texts", "Focused on accuracy and safety"],
+    Google: ["Very fast responses", "Supports images and text together"],
+    DeepSeek: ["Low cost relative to performance", "Well suited for technical tasks"],
+    Meta: ["Open source", "Good for local experimentation and customization"],
+    Alibaba: ["Strong Arabic and Chinese language support", "Competitive pricing"],
   };
  
-  const tips = providerTips[model.provider] || ["موديل ذكاء اصطناعي عام الاستخدام"];
+  const tips = providerTips[model.provider] || ["General-purpose AI model"];
  
   return (
     <div className="instructions-card">
-      <h3>تعليمات الاستخدام — {model.name}</h3>
+      <h3>Usage tips — {model.name}</h3>
       <ul>
         {tips.map((item, i) => (
-          <li key={i}>✅ {item}</li>
+          <li key={i} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <CheckIcon />
+            {item}
+          </li>
         ))}
       </ul>
     </div>

@@ -2,6 +2,7 @@ import React, { useContext } from "react";
  
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../AuthContext.jsx";
+import LumiaMascot from "../assets/Lumia-mascot.png";
  
 function Navbar() {
   const { user, logout } = useContext(AuthContext);
@@ -15,7 +16,19 @@ function Navbar() {
  
   return (
     <nav>
-      <h2>Lumia</h2>
+      {/* تغيير: ضفنا كلاس "navbar-brand" + سطر style بسيط يلغي أي مربع
+          زخرفي كان مرسوم تلقائيًا قبل النص (عنصر ::before بملف CSS
+          عام) - بدون ما نلمس ملفات CSS المشتركة، الإلغاء محصور هنا بس */}
+      <style>{`nav h2.navbar-brand::before { content: none !important; display: none !important; }`}</style>
+ 
+      <h2 className="navbar-brand" style={{ display: "flex", alignItems: "center", gap: "8px", margin: 0 }}>
+        <img
+          src={LumiaMascot}
+          alt="Lumia"
+          style={{ width: "32px", height: "32px", borderRadius: "50%", objectFit: "cover" }}
+        />
+        Lumia
+      </h2>
  
       <Link to="/">Home</Link>
       <Link to="/models">Models</Link>
@@ -28,11 +41,7 @@ function Navbar() {
  
       {user ? (
         <>
-          {/* تغيير: رابط جديد لصفحة البروفايل، يطلع لأي مستخدم مسجل دخول */}
           <Link to="/profile">Profile</Link>
-          <span style={{ color: "var(--text-faint)", fontSize: "13px", marginInlineEnd: "8px" }}>
-            {user.email}
-          </span>
           <button onClick={handleLogout}>Logout</button>
         </>
       ) : (

@@ -3,12 +3,10 @@ import ModelSwitcher from '../components/ModelSwitcher.jsx';
 import ChatInterface from '../components/ChatInterface.jsx';
 import ModelInstructions from '../components/ModelInstructions.jsx';
 import SampleCodeBlock from '../components/SampleCodeBlock.jsx';
-import Sparkle from '../assets/Sparkle.png';
+import LumiaMascot from '../assets/Lumia-mascot.png';
 import './PlaygroundPage.css'
  
 function PlaygroundPage() {
-  // تغيير: selectedModel الحين كائن كامل (id, name, provider, openrouter_id)
-  // بدل ما يكون نص اسم بس - عشان نقدر نعرف مزوّد الموديل بأي مكان نحتاجه
   const [selectedModel, setSelectedModel] = useState(null);
  
   return (
@@ -18,7 +16,7 @@ function PlaygroundPage() {
  
         <div className="upper2Side">
           <div className="upperTop">
-            <img src={Sparkle} alt="" className="logo" />
+            <img src={LumiaMascot} alt="" className="logo" />
             <span className="brand">AI HUB </span>
           </div>
  

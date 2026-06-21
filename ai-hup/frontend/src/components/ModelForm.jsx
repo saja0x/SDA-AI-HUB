@@ -1,6 +1,41 @@
 import React, { useState, useContext } from "react";
 import { AuthContext } from "../AuthContext.jsx";
  
+// الأيقونات الثلاث مكتوبة هنا مباشرة (بدون ملف منفصل)
+function CheckIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
+      <path d="M5 13l4 4L19 7" stroke="var(--violet-soft)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+function WarningIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
+      <path
+        d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"
+        stroke="var(--magenta)"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+function ChatIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
+      <path
+        d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"
+        stroke="var(--cyan)"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+ 
 const checkboxRowStyle = {
   display: "flex",
   alignItems: "center",
@@ -9,9 +44,6 @@ const checkboxRowStyle = {
 };
 const checkboxStyle = { width: "auto", flexShrink: 0 };
  
-// تغيير: حقول إدخال الأرقام (Context Window, Latency, Accuracy) كانت
-// بيضاء (لون افتراضي من المتصفح) بعكس باقي حقول الفورم الغامقة. ضفنا
-// نفس تنسيق الموقع لها.
 const numberInputStyle = {
   background: "var(--surface-2)",
   color: "var(--text-hi)",
@@ -50,7 +82,7 @@ function ModelForm() {
   const [visible, setVisible] = useState(true);
   const [openrouterId, setOpenrouterId] = useState("");
  
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState(null);
  
   const addToList = (value, setValue, list, setList) => {
     if (value.trim() === "") return;
@@ -78,7 +110,7 @@ function ModelForm() {
  
   const handleSubmit = (e) => {
     e.preventDefault();
-    setStatus("");
+    setStatus(null);
  
     fetch("http://127.0.0.1:8000/admin/models", {
       method: "POST",
@@ -111,13 +143,13 @@ function ModelForm() {
       .then((res) => res.json())
       .then((data) => {
         if (data.error) {
-          setStatus(`⚠️ ${data.error}`);
+          setStatus({ type: "error", message: data.error });
           return;
         }
-        setStatus("✅ Model saved successfully");
+        setStatus({ type: "success", message: "Model saved successfully" });
         resetForm();
       })
-      .catch(() => setStatus("⚠️ Could not save model, try again"));
+      .catch(() => setStatus({ type: "error", message: "Could not save model, try again" }));
   };
  
   return (
@@ -284,8 +316,9 @@ function ModelForm() {
         </div>
         <div className="tag-list">
           {samplePrompts.map((p, index) => (
-            <div key={index}>
-              💬 {p}
+            <div key={index} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <ChatIcon />
+              {p}
               <button type="button" onClick={() => removeFromList(index, samplePrompts, setSamplePrompts)}>×</button>
             </div>
           ))}
@@ -324,7 +357,12 @@ function ModelForm() {
           Visible
         </label>
  
-        {status && <p className="form-status">{status}</p>}
+        {status && (
+          <p className="form-status" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            {status.type === "success" ? <CheckIcon /> : <WarningIcon />}
+            {status.message}
+          </p>
+        )}
  
         <button type="submit">Save Model</button>
       </form>

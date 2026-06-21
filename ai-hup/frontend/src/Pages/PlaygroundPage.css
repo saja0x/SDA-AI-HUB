@@ -47,15 +47,21 @@
     flex: 1;
     display: flex;
     flex-direction: row;
-    gap: 16px;
-    padding: 20px 40px;
+    /* تغيير: justify-content: center يخلي المحتوى يتمركز بالنص دائمًا -
+       لو الموديل ما اختير بعد، قسم التعليمات يطلع فاضي، فبطاقة الشات
+       تتمركز لحالها بدل ما تلتصق باليسار وتسيب فراغ كبير باليمين */
+    justify-content: center;
     align-items: flex-start;
+    gap: 24px;
+    padding: 30px 20px;
     background: var(--void);
+    overflow-y: auto;
 }
  
 @media (max-width: 768px) {
     .MainSide {
         flex-direction: column;
+        align-items: center;
     }
     .upperSide {
         padding: 10px;
