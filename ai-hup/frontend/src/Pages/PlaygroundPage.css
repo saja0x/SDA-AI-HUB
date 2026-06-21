@@ -1,0 +1,60 @@
+.Chatpage {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.upperSide {
+    background-color: #ffffff;
+    border-bottom: 1px solid #ffe4e6;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    text-align: center;
+}
+
+.upperTop {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 15px;
+}
+
+.titleUp {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 15px;
+}
+
+.titleUp h1 {
+    font-size: 28px;
+    color: #881337;
+}
+
+.titleDown h2 {
+    font-size: 16px;
+    color: #f43f5e;
+}
+
+.MainSide {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    padding: 20px 40px;
+    align-items: flex-start;
+}
+
+@media (max-width: 768px) {
+    .MainSide {
+        flex-direction: column;
+    }
+    .upperSide {
+        padding: 10px;
+    }
+    .AllAi {
+        flex-wrap: wrap;
+    }
+}

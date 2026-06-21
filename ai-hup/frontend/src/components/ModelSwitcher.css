@@ -1,0 +1,26 @@
+.AllAi {
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+}
+ 
+.AllAi button {
+  background-color: #edafd4;
+  color: #9d174d;
+  border: none;
+  padding:12px 20px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+}
+ 
+.AllAi button:hover {
+  background-color:#fce7f3;
+  color: #db2777; 
+}
+ 
+.AllAi button:active {
+  transform: scale(0.98);
+}

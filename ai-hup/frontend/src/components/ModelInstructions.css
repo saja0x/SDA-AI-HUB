@@ -1,0 +1,26 @@
+.instructions-card {
+    background-color: #ffffff;
+    border: 1px solid #ffe4e6;
+    border-radius: 12px;
+    padding: 20px;
+    width: 300px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+}
+
+.instructions-card h3 {
+    font-size: 16px;
+    color: #881337;
+    margin-bottom: 12px;
+}
+
+.instructions-card ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.instructions-card li {
+    font-size: 14px;
+    color: #4b5563;
+}

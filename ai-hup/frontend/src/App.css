@@ -1,0 +1,140 @@
+/* ============================================================
+   AI MODEL HUB — Design System
+   Deep-space neon: violet / magenta / cyan on near-black void
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+    /* surfaces */
+    --void: #0a0818;
+    --surface: #14112b;
+    --surface-2: #1c1840;
+    --surface-3: #241f52;
+
+    /* accents */
+    --violet: #a855f7;
+    --violet-soft: #c084fc;
+    --magenta: #ec4899;
+    --cyan: #38bdf8;
+
+    /* text */
+    --text-hi: #f5f3ff;
+    --text-lo: #a8a2c9;
+    --text-faint: #6b6491;
+
+    /* borders / glass */
+    --border: rgba(168, 85, 247, 0.22);
+    --border-soft: rgba(245, 243, 255, 0.08);
+
+    /* gradients */
+    --grad-primary: linear-gradient(135deg, var(--violet) 0%, var(--magenta) 100%);
+    --grad-cool: linear-gradient(135deg, var(--cyan) 0%, var(--violet) 100%);
+
+    /* shadows */
+    --glow-violet: 0 0 0 1px rgba(168,85,247,0.25), 0 8px 30px -8px rgba(168,85,247,0.45);
+    --glow-soft: 0 10px 40px -12px rgba(0,0,0,0.6);
+
+    --radius-sm: 10px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --radius-pill: 999px;
+
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+    font-size: 62.5%;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 62.5%;
+}
+
+body {
+    background: var(--void);
+    color: var(--text-hi);
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    font-size: 1.5rem;
+    line-height: 1.6;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* ---------- Ambient living-gradient orbs (signature element) ---------- */
+body::before,
+body::after {
+    content: "";
+    position: fixed;
+    width: 60vmax;
+    height: 60vmax;
+    border-radius: 50%;
+    filter: blur(110px);
+    opacity: 0.28;
+    z-index: 0;
+    pointer-events: none;
+    will-change: transform;
+}
+
+body::before {
+    top: -20vmax;
+    left: -15vmax;
+    background: radial-gradient(circle at 30% 30%, var(--violet), transparent 70%);
+    animation: orbFloatA 26s var(--ease) infinite alternate;
+}
+
+body::after {
+    bottom: -25vmax;
+    right: -15vmax;
+    background: radial-gradient(circle at 60% 60%, var(--cyan), var(--magenta) 60%, transparent 75%);
+    animation: orbFloatB 32s var(--ease) infinite alternate;
+}
+
+@keyframes orbFloatA {
+    0%   { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(6vmax, 8vmax) scale(1.15); }
+}
+@keyframes orbFloatB {
+    0%   { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(-5vmax, -6vmax) scale(1.1); }
+}
+
+#root, .App {
+    position: relative;
+    z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body::before, body::after { animation: none; }
+}
+
+h1, h2, h3 {
+    font-family: 'Sora', 'Inter', sans-serif;
+    letter-spacing: -0.01em;
+}
+
+::selection {
+    background: var(--violet);
+    color: var(--text-hi);
+}
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--void); }
+::-webkit-scrollbar-thumb { background: var(--surface-3); border-radius: var(--radius-pill); }
+::-webkit-scrollbar-thumb:hover { background: var(--violet); }
+
+.logo {
+    width: 40px;
+    height: auto;
+}
+
+.brand {
+    color: var(--text-hi);
+    font-size: 22px;
+    font-weight: 700;
+}
