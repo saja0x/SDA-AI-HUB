@@ -10,6 +10,7 @@ import ModelsPage from './Pages/ModelsPage.jsx';
 import LoginPage from './Pages/LoginPage.jsx';
 import AdminDashboard from './Pages/AdminDashboard.jsx';
 import SignupPage from './Pages/SignupPage.jsx';
+import ProfilePage from './Pages/ProfilePage.jsx';
  
 import ModelDetailPage from './Pages/ModelDetailPage.jsx';
 import ComparisonPage from './Pages/ComparisonPage.jsx';
@@ -29,6 +30,16 @@ function App() {
           <Route path="/models" element={<ModelsPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
+ 
+          {/* تغيير: صفحة جديدة - أي مستخدم مسجل دخول (مو أدمن بس) يقدر يدخلها */}
+          <Route
+            path="/profile"
+            element={
+              <RequireAuth>
+                <ProfilePage />
+              </RequireAuth>
+            }
+          />
  
           <Route
             path="/admin"
@@ -54,8 +65,6 @@ function App() {
           <Route path="/chatbot" element={<ChatbotPage />} />
           <Route path="/benchmark" element={<BenchmarkPage />} />
  
-          {/* تغيير: أي رابط غير موجود يرجّع للصفحة الرئيسية بدل صفحة فاضية
-              (فكرة من ملف الأستاذ - "catch-all" route) */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>

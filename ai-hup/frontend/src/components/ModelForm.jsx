@@ -1,6 +1,23 @@
 import React, { useState, useContext } from "react";
 import { AuthContext } from "../AuthContext.jsx";
  
+const checkboxRowStyle = {
+  display: "flex",
+  alignItems: "center",
+  gap: "8px",
+  width: "auto",
+};
+const checkboxStyle = { width: "auto", flexShrink: 0 };
+ 
+// تغيير: حقول إدخال الأرقام (Context Window, Latency, Accuracy) كانت
+// بيضاء (لون افتراضي من المتصفح) بعكس باقي حقول الفورم الغامقة. ضفنا
+// نفس تنسيق الموقع لها.
+const numberInputStyle = {
+  background: "var(--surface-2)",
+  color: "var(--text-hi)",
+  border: "1px solid var(--border)",
+};
+ 
 function ModelForm() {
   const { token } = useContext(AuthContext);
  
@@ -129,11 +146,12 @@ function ModelForm() {
           <option value="embedding">Embedding</option>
         </select>
  
-        <label>
+        <label style={checkboxRowStyle}>
           <input
             type="checkbox"
             checked={openSource}
             onChange={(e) => setOpenSource(e.target.checked)}
+            style={checkboxStyle}
           />
           Open Source
         </label>
@@ -146,16 +164,19 @@ function ModelForm() {
  
         <fieldset>
           <legend>Supported Modalities</legend>
-          {["text", "image", "audio"].map((m) => (
-            <label key={m} style={{ marginInlineEnd: 10 }}>
-              <input
-                type="checkbox"
-                checked={modality.includes(m)}
-                onChange={() => toggleModality(m)}
-              />
-              {m}
-            </label>
-          ))}
+          <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
+            {["text", "image", "audio"].map((m) => (
+              <label key={m} style={checkboxRowStyle}>
+                <input
+                  type="checkbox"
+                  checked={modality.includes(m)}
+                  onChange={() => toggleModality(m)}
+                  style={checkboxStyle}
+                />
+                {m}
+              </label>
+            ))}
+          </div>
         </fieldset>
  
         <label>
@@ -165,6 +186,7 @@ function ModelForm() {
             min="0"
             value={contextWindow}
             onChange={(e) => setContextWindow(e.target.value)}
+            style={numberInputStyle}
           />
         </label>
  
@@ -182,6 +204,7 @@ function ModelForm() {
             min="0"
             value={latency}
             onChange={(e) => setLatency(e.target.value)}
+            style={numberInputStyle}
           />
         </label>
  
@@ -193,6 +216,7 @@ function ModelForm() {
             max="100"
             value={accuracy}
             onChange={(e) => setAccuracy(e.target.value)}
+            style={numberInputStyle}
           />
         </label>
  
@@ -281,7 +305,7 @@ function ModelForm() {
         />
  
         <label>
-          OpenRouter ID (اختياري - لازم تعبينه عشان الموديل يقدر "يتكلم" بالبلاي قراوند، مثال: openai/gpt-4o)
+          OpenRouter ID (اختياري، لتفعيل المحادثة بالبلاي قراوند)
           <input
             type="text"
             placeholder="provider/model-name"
@@ -290,11 +314,12 @@ function ModelForm() {
           />
         </label>
  
-        <label className="visible-checkbox">
+        <label className="visible-checkbox" style={checkboxRowStyle}>
           <input
             type="checkbox"
             checked={visible}
             onChange={(e) => setVisible(e.target.checked)}
+            style={checkboxStyle}
           />
           Visible
         </label>

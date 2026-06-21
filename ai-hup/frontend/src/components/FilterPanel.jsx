@@ -1,9 +1,14 @@
 import React from "react";
  
-// تغيير مهم: ورقة المشروع الرسمية تطلب 7 أنواع فلترة + خاصية ترتيب.
-// قبل كذا كان موجود 3 بس (Provider, Type, Pricing). ضفنا الأربعة الباقية:
-// Modality، Context length، Open-source/Proprietary، Use case - بالإضافة
-// لقائمة الترتيب (Sorting) المطلوبة بقسم 7 من ورقة المشروع.
+// تغيير: حقول إدخال الأرقام (type="number") كانت ما تاخذ نفس تنسيق
+// الموقع الغامق (تطلع بيضاء افتراضية من المتصفح)، بعكس حقول النصوص
+// والقوائم المنسدلة. ضفنا لها تنسيق صريح بنفس متغيرات ألوان الموقع.
+const numberInputStyle = {
+  background: "var(--surface-2)",
+  color: "var(--text-hi)",
+  border: "1px solid var(--border)",
+};
+ 
 function FilterPanel({
   provider, setProvider,
   type, setType,
@@ -43,7 +48,6 @@ function FilterPanel({
         <option value="high">High</option>
       </select>
  
-      {/* نوع المدخلات (Modality) */}
       <select value={modality} onChange={(e) => setModality(e.target.value)}>
         <option value="">All Modalities</option>
         <option value="text">Text</option>
@@ -51,14 +55,12 @@ function FilterPanel({
         <option value="audio">Audio</option>
       </select>
  
-      {/* مفتوح المصدر مقابل مغلق */}
       <select value={openSource} onChange={(e) => setOpenSource(e.target.value)}>
         <option value="">Open-source or Proprietary</option>
         <option value="open">Open-source only</option>
         <option value="proprietary">Proprietary only</option>
       </select>
  
-      {/* الاستخدام (Use case) */}
       <input
         type="text"
         placeholder="Use case (e.g. coding, chat)"
@@ -66,19 +68,18 @@ function FilterPanel({
         onChange={(e) => setUseCase(e.target.value)}
       />
  
-      {/* أقل حجم ذاكرة (Context length) */}
-      <label className="min-context">
-        Min context:
+      <label className="min-context" style={{ display: "block" }}>
+        <span style={{ display: "block", marginBottom: "6px" }}>Min context</span>
         <input
           type="number"
           min="0"
           placeholder="e.g. 100000"
           value={minContext}
           onChange={(e) => setMinContext(e.target.value)}
+          style={numberInputStyle}
         />
       </label>
  
-      {/* الترتيب (Sorting) - مطلوب صراحة بورقة المشروع، ما كان موجود إطلاقًا */}
       <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
         <option value="">Sort by…</option>
         <option value="accuracy-desc">Accuracy: High to Low</option>
@@ -87,11 +88,12 @@ function FilterPanel({
         <option value="context-desc">Context Window: High to Low</option>
       </select>
  
-      <label className="toggle-accuracy">
+      <label className="toggle-accuracy" style={{ display: "flex", alignItems: "center", gap: "8px", width: "auto" }}>
         <input
           type="checkbox"
           checked={showAccuracy}
           onChange={(e) => setShowAccuracy(e.target.checked)}
+          style={{ width: "auto" }}
         />
         Toggle Accuracy
       </label>

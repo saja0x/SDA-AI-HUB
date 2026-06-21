@@ -3,8 +3,6 @@ import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../AuthContext.jsx";
  
-// تغيير: ضفنا عرض إيميل المستخدم المسجل دخول (فكرة من ملف الأستاذ) -
-// يعطي تأكيد بصري واضح "أنتِ مسجلة دخول بهذا الحساب".
 function Navbar() {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -30,6 +28,8 @@ function Navbar() {
  
       {user ? (
         <>
+          {/* تغيير: رابط جديد لصفحة البروفايل، يطلع لأي مستخدم مسجل دخول */}
+          <Link to="/profile">Profile</Link>
           <span style={{ color: "var(--text-faint)", fontSize: "13px", marginInlineEnd: "8px" }}>
             {user.email}
           </span>
