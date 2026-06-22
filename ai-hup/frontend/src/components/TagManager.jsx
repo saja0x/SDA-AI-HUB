@@ -1,52 +1,45 @@
 import React, { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../AuthContext.jsx";
- 
+import { apiRequest } from "../api.js";
+
 function TagManager() {
   const { token } = useContext(AuthContext);
   const [tags, setTags] = useState([]);
   const [newTag, setNewTag] = useState("");
- 
-  const authHeaders = {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
-  };
- 
+
   const loadTags = () => {
-    fetch("http://127.0.0.1:8000/admin/tags", { headers: authHeaders })
-      .then((res) => res.json())
+    apiRequest("/admin/tags", { token })
       .then((data) => setTags(Array.isArray(data) ? data : []))
       .catch((err) => console.log("API Error:", err));
   };
- 
+
   useEffect(() => {
     loadTags();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
- 
+
   const addTag = () => {
     if (!newTag.trim()) return;
-    fetch(`http://127.0.0.1:8000/admin/tags?name=${encodeURIComponent(newTag.trim())}`, {
+    apiRequest(`/admin/tags?name=${encodeURIComponent(newTag.trim())}`, {
       method: "POST",
-      headers: authHeaders,
+      token,
     })
-      .then((res) => res.json())
       .then(() => {
         setNewTag("");
         loadTags();
       })
       .catch((err) => console.log("API Error:", err));
   };
- 
+
   const deleteTag = (id) => {
-    fetch(`http://127.0.0.1:8000/admin/tags/${id}`, {
+    apiRequest(`/admin/tags/${id}`, {
       method: "DELETE",
-      headers: authHeaders,
+      token,
     })
-      .then((res) => res.json())
       .then(() => loadTags())
       .catch((err) => console.log("API Error:", err));
   };
- 
+
   return (
     <div>
       <input
@@ -55,7 +48,7 @@ function TagManager() {
         placeholder="New tag name"
       />
       <button onClick={addTag}>Add Tag</button>
- 
+
       {tags.map((tag) => (
         <div key={tag.id}>
           {tag.name}
@@ -65,5 +58,5 @@ function TagManager() {
     </div>
   );
 }
- 
+
 export default TagManager;

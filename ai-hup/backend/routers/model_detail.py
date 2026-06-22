@@ -10,21 +10,21 @@ routers/model_detail.py
 """
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
- 
+
 from database import SessionLocal
 from services.model_detail_service import get_model_detail_service
- 
+
 router = APIRouter(prefix="/models", tags=["Model Detail"])
- 
- 
+
+
 def get_session():
     session = SessionLocal()
     try:
         yield session
     finally:
         session.close()
- 
- 
+
+
 def _model_to_dict(m):
     if not m:
         return None
@@ -50,20 +50,20 @@ def _model_to_dict(m):
         "visible": m.visible,
         "openrouter_id": m.openrouter_id,
     }
- 
- 
+
+
 @router.get("/{model_id}")
 def get_model_detail(model_id: int, session: Session = Depends(get_session)):
     result = get_model_detail_service(session, model_id)
     model = result["model"]
     versions = result["versions"]
- 
+
     return {
         "model": _model_to_dict(model),
         "versions": [
             {
                 "version": v.version,
-                "release_date": v.release_date.isoformat() if v.release_date else None,
+                "release_date": str(v.release_date) if v.release_date else None,
                 "notes": v.notes,
             }
             for v in versions

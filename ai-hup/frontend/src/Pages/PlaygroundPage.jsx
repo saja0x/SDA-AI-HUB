@@ -5,6 +5,7 @@ import ChatInterface from '../components/ChatInterface.jsx';
 import ModelInstructions from '../components/ModelInstructions.jsx';
 import SampleCodeBlock from '../components/SampleCodeBlock.jsx';
 import LumiaMascot from '../assets/Lumia-mascot.png';
+import { apiRequest } from '../api.js';
 import './PlaygroundPage.css';
 
 function PlaygroundPage() {
@@ -12,16 +13,12 @@ function PlaygroundPage() {
   const [selectedModel, setSelectedModel] = useState(null);
   const [allModels, setAllModels] = useState([]);
 
-  // نجيب قائمة الموديلات عشان نقدر نحدد الموديل المُمرَّر بالـ state
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/playground/models")
-      .then((r) => r.json())
+    apiRequest("/playground/models")
       .then((data) => setAllModels(Array.isArray(data) ? data : []))
       .catch(() => {});
   }, []);
 
-  // تغيير: لما يجي من الشات بوت أو الكاردز بـ state.preselect (اسم الموديل)،
-  // نبحث عن الكائن الكامل للموديل ونختاره تلقائيًا بدون تدخل المستخدم
   useEffect(() => {
     const preselectName = location.state?.preselect;
     if (preselectName && allModels.length > 0) {

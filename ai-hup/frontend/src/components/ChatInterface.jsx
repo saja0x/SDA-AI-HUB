@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import './ChatInterface.css';
 import LumiaMascot from '../assets/Lumia-mascot.png';
+import { AuthContext } from '../AuthContext.jsx';
+import { apiRequest } from '../api.js';
 
 const MESSAGE_LIMIT = 10;
 
@@ -14,6 +16,7 @@ function WarningIcon() {
 }
 
 function ChatInterface({ model }) {
+  const { token } = useContext(AuthContext);
   const modelName = model?.name || null;
 
   const [messages, setMessages] = useState([]);
@@ -28,18 +31,15 @@ function ChatInterface({ model }) {
       setLimitReached(false);
       return;
     }
-    const token = localStorage.getItem("token");
     if (!token) return;
-    fetch(`http://127.0.0.1:8000/playground/usage/${model.id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((r) => r.json())
+
+    apiRequest(`/playground/usage/${model.id}`, { token })
       .then((data) => {
         setRemaining(data.remaining ?? MESSAGE_LIMIT);
         setLimitReached((data.remaining ?? MESSAGE_LIMIT) <= 0);
       })
       .catch(() => {});
-  }, [model?.id]);
+  }, [model?.id, token]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -49,15 +49,19 @@ function ChatInterface({ model }) {
     setInput('');
     setLoading(true);
 
-    const token = localStorage.getItem("token");
-
+    // نستخدم fetch هنا بشكل مباشر لأننا نحتاج نتحقق من status 429
+    // قبل ما نحوّل الرد لـ JSON — apiRequest يرمي error على أي رد مو 2xx
     fetch("http://127.0.0.1:8000/playground/chat", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
-      body: JSON.stringify({ message: userText, model: modelName || "AI", model_id: model?.id }),
+      body: JSON.stringify({
+        message: userText,
+        model: modelName || "AI",
+        model_id: model?.id,
+      }),
     })
       .then((res) => {
         if (res.status === 429) {
@@ -65,7 +69,11 @@ function ChatInterface({ model }) {
           setRemaining(0);
           setMessages((prev) => [...prev,
             { text: userText, sender: "user" },
-            { text: `You've reached the ${MESSAGE_LIMIT}-message limit for this model. Try exploring other models!`, sender: "bot", isLimit: true },
+            {
+              text: `You've reached the ${MESSAGE_LIMIT}-message limit for this model. Try exploring other models!`,
+              sender: "bot",
+              isLimit: true,
+            },
           ]);
           return null;
         }

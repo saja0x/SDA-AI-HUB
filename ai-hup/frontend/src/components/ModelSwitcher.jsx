@@ -1,20 +1,16 @@
 import "./ModelSwitcher.css";
 import React, { useState, useEffect } from "react";
- 
-// تغيير: قبل كذا كانت ترسل اسم الموديل (نص) بس لما تختارينه. الحين
-// ترسل بيانات الموديل كاملة (id, name, provider, openrouter_id...) -
-// هذا اللي يخلي ChatInterface وModelInstructions وSampleCodeBlock
-// يقدرون يتصرفون صح حسب المزوّد الحقيقي للموديل المختار.
+import { apiRequest } from "../api.js";
+
 function ModelSwitcher({ selected, onSelect }) {
   const [models, setModels] = useState([]);
- 
+
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/playground/models")
-      .then((res) => res.json())
+    apiRequest("/playground/models")
       .then((data) => setModels(data))
       .catch((err) => console.log("API Error:", err));
   }, []);
- 
+
   return (
     <div className="AllAi">
       {models.map((model) => (
@@ -29,5 +25,5 @@ function ModelSwitcher({ selected, onSelect }) {
     </div>
   );
 }
- 
+
 export default ModelSwitcher;

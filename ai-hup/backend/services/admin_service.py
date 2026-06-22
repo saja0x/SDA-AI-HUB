@@ -54,12 +54,7 @@ def get_all_models_admin():
     finally:
         session.close()
  
- 
-def search_models(query):
-    return {
-        "search": query
-    }
- 
+
  
 def create_model(data):
     session = SessionLocal()

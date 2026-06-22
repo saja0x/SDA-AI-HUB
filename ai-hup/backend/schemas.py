@@ -8,47 +8,44 @@ schemas.py
 توصف الجداول، والـ Schemas توصف شكل بيانات الـ API - هذا الفرق يخلينا
 مثلًا نستقبل كلمة مرور نصية وقت التسجيل، بس أبدًا ما نرجعها بأي رد.
 """
-from typing import List, Optional, Literal
+from typing import List, Optional
 from pydantic import BaseModel, EmailStr, Field
- 
- 
-# ============== المصادقة (Authentication) - مطابقة لملف الأستاذ ==============
- 
+
+
+# ============== المصادقة (Authentication) ==============
+
 class UserCreate(BaseModel):
     """Body of POST /auth/register."""
- 
-    email: EmailStr  # يتحقق تلقائيًا من صيغة الإيميل - "asdasdasd" يرفض بخطأ 422
+
+    email: EmailStr
     password: str = Field(min_length=6)
- 
-    # قائمة اختيار الدور موجودة هنا عشان نقدر نجرب صلاحيات الأدمن بسهولة
-    # وقت العرض (نفس فكرة ملف الأستاذ بالضبط). بمشروع حقيقي السيرفر هو
-    # اللي يحدد الدور، مو المستخدم نفسه وقت التسجيل.
-    role: Literal["user", "admin"] = "user"
- 
- 
+    # الدور ما يجي من المستخدم — يتحدد بالباكند دايماً كـ "user"
+    # الأدمن يتضاف من التيرمنل بس عبر create_admin.py
+
+
 class UserLogin(BaseModel):
     """Body of POST /auth/login."""
     email: EmailStr
     password: str
- 
- 
+
+
 class UserOut(BaseModel):
     """شكل بيانات المستخدم اللي نرجعها - بدون كلمة المرور المشفّرة إطلاقًا."""
     id: int
     email: EmailStr
     role: str
- 
+
     model_config = {"from_attributes": True}
- 
- 
+
+
 class Token(BaseModel):
     """رد POST /auth/login: التوكن + نوعه."""
     access_token: str
     token_type: str = "bearer"
- 
- 
+
+
 # ============== الموديلات (Models) ==============
- 
+
 class ModelInput(BaseModel):
     """كل الحقول اللي يقدر الأدمن يعبيها لما يضيف أو يعدّل موديل."""
     name: str

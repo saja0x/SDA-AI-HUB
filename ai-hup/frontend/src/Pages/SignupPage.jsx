@@ -2,34 +2,33 @@ import React, { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../AuthContext.jsx";
 import LumiaMascot from "../assets/Lumia-mascot.png";
-
-// قائمة اختيار الدور (Role) موجودة هنا عشان نقدر نسوي حسابي أدمن وuser
-// ونجرب صلاحيات لوحة التحكم بسهولة وقت العرض - نفس فكرة ملف الأستاذ
-// بالضبط. بمشروع حقيقي السيرفر هو اللي يحدد الدور، مو المستخدم نفسه
-// وقت التسجيل (وإلا أي حد يقدر يخلي نفسه أدمن).
+ 
+// تغيير أمني: شلنا خيار اختيار الدور (Role) من واجهة التسجيل.
+// قبل كذا أي حد يقدر يختار "admin" من القائمة — هذا خطر أمني حقيقي.
+// الحين كل حساب جديد يصير "user" تلقائياً بدون أي خيار.
+// الأدمن يُضاف من التيرمنل مباشرة بـ: python create_admin.py
 function SignupPage() {
     const { register } = useContext(AuthContext);
     const navigate = useNavigate();
-
+ 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [role, setRole] = useState("user");
     const [error, setError] = useState("");
-
+ 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError("");
         try {
-            await register(email, password, role);
+            // الدور "user" ثابت — ما يجي من المستخدم
+            await register(email, password, "user");
             navigate("/");
         } catch (err) {
             setError(err.message);
         }
     };
-
+ 
     return (
         <div className="login-container">
-            {/* لوقو لوميا فوق العنوان */}
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "16px" }}>
                 <img
                     src={LumiaMascot}
@@ -54,13 +53,6 @@ function SignupPage() {
                     minLength={6}
                     required
                 />
-                <label className="role-select">
-                    Role
-                    <select value={role} onChange={(e) => setRole(e.target.value)}>
-                        <option value="user">user</option>
-                        <option value="admin">admin</option>
-                    </select>
-                </label>
                 {error && <p className="form-error">{error}</p>}
                 <button type="submit">Sign Up</button>
             </form>
@@ -70,5 +62,5 @@ function SignupPage() {
         </div>
     );
 }
-
+ 
 export default SignupPage;

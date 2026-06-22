@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import ComparisonTable from "../components/ComparisonTable";
 import ModelSelector from "../components/ModelSelector";
+import { apiRequest } from "../api.js";
 
 export default function ModelComparison() {
   const [models, setModels] = useState([]);
@@ -9,13 +10,11 @@ export default function ModelComparison() {
   const location = useLocation();
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/models")
-      .then((res) => res.json())
+    apiRequest("/models")
       .then((data) => setModels(data))
       .catch((err) => console.log("API Error:", err));
   }, []);
 
-  // لو جاي من زر "Compare" بكرت موديل معيّن (من صفحة Home)، نضيفه تلقائيًا
   useEffect(() => {
     const preselectId = location.state?.preselectId;
     if (preselectId && models.length > 0) {

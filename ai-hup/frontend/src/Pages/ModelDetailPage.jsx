@@ -3,15 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import CapabilitiesList from "../components/CapabilitiesList";
 import VersioningInfo from "../components/VersioningInfo";
 import SamplePrompts from "../components/SamplePrompts";
+import { apiRequest } from "../api.js";
 
-// تغييرات مهمة:
-// 1) الصفحة الحين تقرا من قاعدة البيانات الحقيقية (الباكند صار يرجع
-//    {model, versions} بدل بيانات الملف الثابت القديم)
-// 2) ضفنا عرض Modalities وUse cases وTags - موجودين بقاعدة البيانات
-//    من زمان بس ما كانوا يُعرضون
-// 3) SamplePrompts الحين تاخذ بيانات الموديل الحقيقية، مو 3 جمل ثابتة
-// 4) تغيير جديد: زر "Try in Playground" يوديك مباشرة للبلاي قراوند
-//    مع تحديد هذا الموديل تلقائيًا (بدون ما تدورين عليه بالقائمة)
 function ModelDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -19,8 +12,7 @@ function ModelDetailPage() {
   const [versions, setVersions] = useState([]);
 
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/models/${id}`)
-      .then((res) => res.json())
+    apiRequest(`/models/${id}`)
       .then((data) => {
         setModel(data.model);
         setVersions(data.versions || []);
@@ -34,7 +26,6 @@ function ModelDetailPage() {
     <div className="model-detail">
       <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
         <h1 style={{ margin: 0 }}>{model.name}</h1>
-        {/* زر "Try in Playground" - يمرر اسم الموديل عشان يتحدد تلقائيًا */}
         <button
           onClick={() => navigate('/playground', { state: { preselect: model.name } })}
           style={{

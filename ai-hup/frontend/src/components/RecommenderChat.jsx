@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './ChatInterface.css';
 import LumiaMascot from '../assets/Lumia-mascot.png';
 import { useNavigate } from 'react-router-dom';
+import { apiRequest } from '../api.js';
 
 function WarningIcon() {
   return (
@@ -20,12 +21,10 @@ function RecommenderChat() {
   const [recommendedModel, setRecommendedModel] = useState(null);
 
   const sendRequest = (text, displayText) => {
-    fetch("http://127.0.0.1:8000/chatbot/recommend", {
+    apiRequest("/chatbot/recommend", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ use_case: text }),
+      body: { use_case: text },
     })
-      .then((r) => r.json())
       .then((data) => {
         setRecommendedModel(data.recommended_model);
         setMessages((prev) => [...prev,
@@ -62,8 +61,6 @@ function RecommenderChat() {
     setStep('budget');
   };
 
-  // تغيير: الأزرار الإنجليزية تُرسَل بنصها الكامل لـ GPT مباشرة (مو كلمة عربية)
-  // GPT يفهم "Free budget" ويختار الأنسب من قائمة الموديلات الحقيقية
   const handleBudgetClick = (label) => {
     sendRequest(label, label);
     setStep('done');
@@ -106,7 +103,6 @@ function RecommenderChat() {
                 {msg.isRecommendation ? `We recommend: ${msg.text}` : msg.text}
               </p>
 
-              {/* سبب التوصية من GPT - يطلع بنص أصغر تحت اسم الموديل */}
               {msg.isRecommendation && msg.reason && (
                 <p style={{ fontSize: "12px", color: "var(--text-lo)", margin: "4px 0 8px" }}>
                   {msg.reason}

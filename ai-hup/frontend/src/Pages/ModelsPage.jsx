@@ -4,9 +4,10 @@ import FilterPanel from "../components/FilterPanel";
 import Pagination from "../components/Pagination";
 import React, { useState, useEffect } from "react";
 import "../App.css";
- 
+import { apiRequest } from "../api.js";
+
 const MODELS_PER_PAGE = 6;
- 
+
 function ModelsPage() {
     const [allModels, setAllModels] = useState([]);
     const [search, setSearch] = useState("");
@@ -20,19 +21,17 @@ function ModelsPage() {
     const [sortBy, setSortBy] = useState("");
     const [showAccuracy, setShowAccuracy] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
- 
+
     useEffect(() => {
-        fetch("http://127.0.0.1:8000/models")
-            .then((res) => res.json())
+        apiRequest("/models")
             .then((data) => setAllModels(data))
             .catch((err) => console.log("API Error:", err));
     }, []);
- 
-    // كل ما تغيّر أي فلتر، نرجع لأول صفحة - عشان ما نعلق بصفحة فاضية
+
     useEffect(() => {
         setCurrentPage(1);
     }, [search, provider, type, pricing, modality, openSource, useCase, minContext, sortBy]);
- 
+
     let filtered = allModels.filter((m) => {
         const matchesSearch = m.name.toLowerCase().includes(search.toLowerCase());
         const matchesProvider = provider === "" || m.provider === provider;
@@ -47,14 +46,13 @@ function ModelsPage() {
             useCase === "" ||
             (m.use_cases || []).some((uc) => uc.toLowerCase().includes(useCase.toLowerCase()));
         const matchesContext = minContext === "" || (m.context_window || 0) >= Number(minContext);
- 
+
         return (
             matchesSearch && matchesProvider && matchesType && matchesPricing &&
             matchesModality && matchesOpenSource && matchesUseCase && matchesContext
         );
     });
- 
-    // الترتيب (Sorting) - يصير بعد الفلترة، قبل التقسيم لصفحات
+
     if (sortBy === "accuracy-desc") {
         filtered = [...filtered].sort((a, b) => (b.accuracy || 0) - (a.accuracy || 0));
     } else if (sortBy === "latency-asc") {
@@ -64,13 +62,13 @@ function ModelsPage() {
     } else if (sortBy === "context-desc") {
         filtered = [...filtered].sort((a, b) => (b.context_window || 0) - (a.context_window || 0));
     }
- 
+
     const totalPages = Math.max(1, Math.ceil(filtered.length / MODELS_PER_PAGE));
     const paginated = filtered.slice(
         (currentPage - 1) * MODELS_PER_PAGE,
         currentPage * MODELS_PER_PAGE
     );
- 
+
     return (
         <div className="container">
             <h1>Browse models</h1>
