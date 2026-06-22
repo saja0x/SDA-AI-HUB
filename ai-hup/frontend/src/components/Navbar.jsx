@@ -16,9 +16,6 @@ function Navbar() {
  
   return (
     <nav>
-      {/* تغيير: ضفنا كلاس "navbar-brand" + سطر style بسيط يلغي أي مربع
-          زخرفي كان مرسوم تلقائيًا قبل النص (عنصر ::before بملف CSS
-          عام) - بدون ما نلمس ملفات CSS المشتركة، الإلغاء محصور هنا بس */}
       <style>{`nav h2.navbar-brand::before { content: none !important; display: none !important; }`}</style>
  
       <h2 className="navbar-brand" style={{ display: "flex", alignItems: "center", gap: "8px", margin: 0 }}>

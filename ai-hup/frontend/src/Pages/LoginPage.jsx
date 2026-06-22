@@ -24,7 +24,6 @@ function LoginPage() {
 
     return (
         <div className="login-container">
-            {/* لوقو لوميا فوق العنوان */}
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "16px" }}>
                 <img
                     src={LumiaMascot}
@@ -32,7 +31,8 @@ function LoginPage() {
                     style={{ width: "80px", height: "80px", borderRadius: "50%", objectFit: "cover", marginBottom: "8px" }}
                 />
             </div>
-            <h1>Login</h1>
+            <h1>Login To Lumia</h1>
+            
             <form onSubmit={handleSubmit}>
                 <input
                     type="email"

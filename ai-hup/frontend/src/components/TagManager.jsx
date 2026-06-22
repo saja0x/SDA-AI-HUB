@@ -46,8 +46,9 @@ function TagManager() {
       .then(() => loadTags())
       .catch((err) => console.log("API Error:", err));
   };
- 
+
   return (
+    
     <div>
       <input
         value={newTag}
@@ -55,6 +56,7 @@ function TagManager() {
         placeholder="New tag name"
       />
       <button onClick={addTag}>Add Tag</button>
+      
  
       {tags.map((tag) => (
         <div key={tag.id}>
