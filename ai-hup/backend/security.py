@@ -32,7 +32,7 @@ from models.user import User
 # أي حد يعرف هذا المفتاح يقدر يزوّر توكنات لأي مستخدم.
 SECRET_KEY = os.getenv("JWT_SECRET_KEY", "change-me-in-production-this-is-a-classroom-demo")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # أسبوع = 10,080 دقيقة
  
 # HTTPBearer يسحب التوكن من Header اسمه "Authorization: Bearer xxx" تلقائيًا،
 # ويرجع 403 لو الـ Header مفقود بالكامل.

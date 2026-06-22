@@ -1,9 +1,9 @@
 """
 سكربت تعبئة قاعدة البيانات بالبيانات الأولية من models_seed.json
-يشتغل تلقائيًا عند تشغيل السيرفر (main.py) - وما يكرر التعبئة لو البيانات موجودة أصلاً
+يشتغل تلقائيًا عند تشغيل السيرفر (main.py) - وما يكرر التعبئة لو البيانات موجودة أصلًا
  
-تغيير: شلنا تعبئة جدول Role (admin/user) - ما عاد محتاجينه بعد ما صار
-عمود role نصي بسيط مباشرة بجدول User (مطابق لملف الأستاذ).
+تغيير: أضفنا استيراد usage_limit عشان SQLAlchemy يشوف الجدول الجديد
+ويسويه تلقائيًا بأول تشغيل (مو محتاجين نحذف app.db).
 """
 import json
 import os
@@ -13,31 +13,30 @@ from models.provider import Provider
 from models.model import Model
 from models.model_version import ModelVersion
  
-SEED_PATH = os.path.join(os.path.dirname(__file__), "models_seed.json")
- 
  
 def seed_database():
+    # ضيفنا usage_limit هنا عشان init_db يلقاه ويعمل الجدول لو ما كان موجود
+    from models import usage_limit  # noqa: F401
+ 
     init_db()
     session = SessionLocal()
  
     try:
-        # لو فيه موديلات بالقاعدة أصلاً، ما نكرر التعبئة (عشان ما تتكرر كل تشغيل)
         if session.query(Model).count() > 0:
             return
  
+        SEED_PATH = os.path.join(os.path.dirname(__file__), "models_seed.json")
         with open(SEED_PATH, "r", encoding="utf-8") as f:
             seed_models = json.load(f)
  
-        # نسوي صف Provider لكل مزوّد فريد
         provider_names = sorted({m["provider"] for m in seed_models})
         provider_map = {}
         for pname in provider_names:
             provider = Provider(name=pname)
             session.add(provider)
-            session.flush()  # نحتاج الـ id قبل الـ commit
+            session.flush()
             provider_map[pname] = provider.id
  
-        # نضيف كل موديل + نسخة أولية له بجدول model_versions
         for m in seed_models:
             model_row = Model(
                 name=m["name"],

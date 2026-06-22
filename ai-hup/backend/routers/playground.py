@@ -1,47 +1,37 @@
 """
 routers/playground.py
-------------------------
-يخلي المستخدم يجرب يحادث أي موديل ظاهر بالموقع، عن طريق خدمة خارجية
-حقيقية اسمها OpenRouter.
- 
-تغيير مهم #1: قبل كذا الموديلات كانت تتجاب من ملف ثابت (data.py) يتحمّل
-مرة وحدة بس وقت تشغيل السيرفر. الحين تتجاب من قاعدة البيانات الحقيقية،
-فأي موديل يضيفه/يعدّله/يحذفه الأدمن ينعكس هنا فورًا.
- 
-تغيير مهم #2: قبل كذا قائمة "model_map" كانت أسماء ثابتة بالكود (9 موديلات
-بس). الحين كل موديل بقاعدة البيانات له حقل اسمه openrouter_id - لو الأدمن
-عبّاه وقت إضافة الموديل، الموديل يقدر "يتكلم" بالبلاي قراوند، ولو تركه
-فاضي يطلع بالقائمة بس يرفض المحادثة برسالة واضحة.
+-----------------------
+مسارات البلاي قراوند. كل طلب يمر بخطوتين قبل ما يوصل للـ LLM:
+  1. التحقق من التوكن (يعني تسجيل دخول إجباري - Depends(get_current_user))
+  2. فحص ليمت الرسايل: لو المستخدم وصل 10 رسايل لهذا الموديل → رفض فوري
+
+الرقم 10 محفوظ بثابت (MESSAGE_LIMIT) يسهّل تغييره لاحقًا من مكان واحد.
+
+بونص (من زميلة أخرى بالفريق): Public API endpoints تسمح لأي تطبيق خارجي
+يجيب قائمة الموديلات أو يبحث عن موديل بالاسم - بدون تسجيل دخول.
 """
 import os
 import requests
-from fastapi import APIRouter, Depends
+
+from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from dotenv import load_dotenv
 from sqlalchemy.orm import Session
- 
-from database import SessionLocal
+
+from database import get_db
 from models.model import Model
- 
+from models.usage_limit import UsageLimit
+from models.user import User
+from security import get_current_user
+
 load_dotenv()
-OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
- 
-router = APIRouter()
- 
- 
-def get_session():
-    session = SessionLocal()
-    try:
-        yield session
-    finally:
-        session.close()
- 
- 
-class MessageRequest(BaseModel):
-    message: str
-    model: str
- 
- 
+
+router = APIRouter(prefix="/playground", tags=["playground"])
+
+MESSAGE_LIMIT = 10  # الحد الأقصى لكل مستخدم لكل موديل - ثابت للأبد
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
+
+
 def _model_to_dict(m):
     return {
         "id": m.id,
@@ -51,73 +41,153 @@ def _model_to_dict(m):
         "description": m.description,
         "openrouter_id": m.openrouter_id,
     }
- 
- 
-@router.get("/playground/models")
-def get_models(session: Session = Depends(get_session)):
-    """يرجع كل الموديلات الظاهرة - يستخدمها ModelSwitcher لبناء أزرار الاختيار."""
-    rows = session.query(Model).filter(Model.visible == True).all()  # noqa: E712
-    return [_model_to_dict(m) for m in rows]
- 
- 
-@router.post("/playground/chat")
-def chat(request: MessageRequest, session: Session = Depends(get_session)):
-    model_row = session.query(Model).filter(Model.name == request.model).first()
- 
-    if not model_row:
+
+
+class ChatRequest(BaseModel):
+    message: str
+    model: str
+    model_id: int | None = None
+
+
+# ---------- مسارات البلاي قراوند (تحتاج تسجيل دخول) ----------
+
+@router.get("/models")
+def list_playground_models(db: Session = Depends(get_db)):
+    """قائمة الموديلات المرئية فقط عشان يختار منها المستخدم بالبلاي قراوند."""
+    models = db.query(Model).filter(Model.visible == True).all()
+    return [_model_to_dict(m) for m in models]
+
+
+@router.post("/chat")
+def chat(
+    req: ChatRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    إرسال رسالة للموديل المختار. قبل ما يوصل للـ LLM:
+      1. نتحقق من الليمت
+      2. لو ما وصل → نرسل ونزيد العداد
+      3. لو وصل 10 → نرفض برسالة واضحة
+    """
+    # --- فحص الليمت ---
+    model_id = req.model_id
+    if model_id is None:
+        model_obj = db.query(Model).filter(Model.name == req.model).first()
+        model_id = model_obj.id if model_obj else None
+
+    limit_row = None
+    if model_id is not None:
+        limit_row = (
+            db.query(UsageLimit)
+            .filter(
+                UsageLimit.user_id == current_user.id,
+                UsageLimit.model_id == model_id,
+            )
+            .first()
+        )
+
+        if limit_row is None:
+            limit_row = UsageLimit(user_id=current_user.id, model_id=model_id, message_count=0)
+            db.add(limit_row)
+            db.flush()
+
+        if limit_row.message_count >= MESSAGE_LIMIT:
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail=f"You've reached the {MESSAGE_LIMIT}-message limit for this model. Try exploring other models on the platform!",
+            )
+
+        limit_row.message_count += 1
+        db.commit()
+
+    # --- الإرسال للـ LLM ---
+    model_obj = db.query(Model).filter(Model.name == req.model).first()
+
+    if not model_obj:
         return {"reply": "هذا الموديل غير موجود."}
- 
-    if model_row.type == "embedding":
+
+    if model_obj.type == "embedding":
         return {"reply": "هذا الموديل مخصص للبحث الذكي (embeddings) وليس للمحادثة المباشرة."}
- 
-    technical_name = model_row.openrouter_id
- 
-    if not technical_name:
+
+    openrouter_id = model_obj.openrouter_id
+
+    if not openrouter_id:
         return {
             "reply": "هذا الموديل غير متاح للمحادثة الحقيقية حالياً "
                      "(ما له معرّف OpenRouter - راجعي الأدمن لإضافته)."
         }
- 
+
     if not OPENROUTER_API_KEY:
         return {"reply": "⚠️ ما فيه مفتاح OpenRouter مُعد بملف .env بالباكند."}
- 
+
     try:
-        response = requests.post(
-            url="https://openrouter.ai/api/v1/chat/completions",
+        resp = requests.post(
+            "https://openrouter.ai/api/v1/chat/completions",
             headers={
                 "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
             },
             json={
-                "model": technical_name,
-                "messages": [{"role": "user", "content": request.message}],
-                "max_tokens": 500
+                "model": openrouter_id,
+                "messages": [{"role": "user", "content": req.message}],
+                "max_tokens": 500,
             },
             timeout=30,
         )
-        data = response.json()
+        resp.raise_for_status()
+        data = resp.json()
         reply = data["choices"][0]["message"]["content"]
     except requests.RequestException as e:
         return {"reply": f"تعذر الاتصال بخدمة OpenRouter: {e}"}
     except (KeyError, IndexError):
-        return {"reply": f"خطأ من الخدمة: {data}"}
- 
-    return {"reply": reply}
- 
- 
+        return {"reply": "خطأ في استجابة الخدمة."}
+
+    remaining = max(0, MESSAGE_LIMIT - limit_row.message_count) if limit_row else None
+    return {"reply": reply, "remaining": remaining}
+
+
+@router.get("/usage/{model_id}")
+def get_usage(
+    model_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """يرجع كم رسالة تبقت للمستخدم لهذا الموديل (الفرونت اند يعرضها)."""
+    limit_row = (
+        db.query(UsageLimit)
+        .filter(
+            UsageLimit.user_id == current_user.id,
+            UsageLimit.model_id == model_id,
+        )
+        .first()
+    )
+    used = limit_row.message_count if limit_row else 0
+    return {
+        "model_id": model_id,
+        "used": used,
+        "limit": MESSAGE_LIMIT,
+        "remaining": max(0, MESSAGE_LIMIT - used),
+    }
+
+
+# ---------- Public API (بونص - من فكرة زميلة بالفريق) ----------
+# هذي المسارات ما تحتاج تسجيل دخول - مخصصة لأي تطبيق خارجي يبي
+# يجيب قائمة الموديلات أو يبحث عن موديل بالاسم (Stretch Goal: API for external access)
+
 @router.get("/api/v1/models")
-def get_all_models_public(session: Session = Depends(get_session)):
-    """Public API endpoint - يرجع كل الموديلات الظاهرة بس (مو المخفية)."""
-    rows = session.query(Model).filter(Model.visible == True).all()  # noqa: E712
-    models = [_model_to_dict(m) for m in rows]
-    return {"success": True, "count": len(models), "models": models}
- 
- 
+def get_all_models_public(db: Session = Depends(get_db)):
+    """Public API - يرجع كل الموديلات الظاهرة بدون تسجيل دخول."""
+    models = db.query(Model).filter(Model.visible == True).all()
+    return {"success": True, "count": len(models), "models": [_model_to_dict(m) for m in models]}
+
+
 @router.get("/api/v1/models/{model_name}")
-def get_model_by_name(model_name: str, session: Session = Depends(get_session)):
+def get_model_by_name(model_name: str, db: Session = Depends(get_db)):
+    """Public API - يبحث عن موديل بالاسم."""
     model_row = (
-        session.query(Model)
-        .filter(Model.name.ilike(model_name), Model.visible == True)  # noqa: E712
+        db.query(Model)
+        .filter(Model.name.ilike(model_name), Model.visible == True)
         .first()
     )
     if model_row:
