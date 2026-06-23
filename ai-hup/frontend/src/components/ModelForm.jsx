@@ -1,7 +1,6 @@
 import React, { useState, useContext } from "react";
 import { AuthContext } from "../AuthContext.jsx";
  
-// الأيقونات الثلاث مكتوبة هنا مباشرة (بدون ملف منفصل)
 function CheckIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
@@ -154,7 +153,7 @@ function ModelForm() {
  
   return (
     <div className="model-form-container">
-      <h2>إضافة موديل جديد</h2>
+      <h2>Add A New Model</h2>
       <form onSubmit={handleSubmit}>
  
         <input
@@ -194,7 +193,7 @@ function ModelForm() {
           onChange={(e) => setDescription(e.target.value)}
         />
  
-        <fieldset>
+        <fieldset style={{ border: "none", padding: 0, margin: 0 }}>
           <legend>Supported Modalities</legend>
           <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
             {["text", "image", "audio"].map((m) => (
@@ -266,7 +265,7 @@ function ModelForm() {
         <div className="tag-input-row">
           <input
             type="text"
-            placeholder="أضف تاج"
+            placeholder="Add Tag"
             value={newTag}
             onChange={(e) => setNewTag(e.target.value)}
           />
@@ -338,7 +337,7 @@ function ModelForm() {
         />
  
         <label>
-          OpenRouter ID (اختياري، لتفعيل المحادثة بالبلاي قراوند)
+          OpenRouter ID (  My Choice To Enable Chat On The Playground  )
           <input
             type="text"
             placeholder="provider/model-name"

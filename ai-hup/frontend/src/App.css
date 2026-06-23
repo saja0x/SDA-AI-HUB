@@ -7,16 +7,17 @@
 
 :root {
     /* surfaces */
-    --void: #0a0818;
-    --surface: #14112b;
-    --surface-2: #1c1840;
+    --void: #2d0b29;
+    --surface: #1e0a1f;
+    --surface-2: #43043a;
     --surface-3: #241f52;
 
     /* accents */
-    --violet: #a855f7;
+    --violet: #0423e4;
     --violet-soft: #c084fc;
     --magenta: #ec4899;
     --cyan: #38bdf8;
+    --white: #fff;
 
     /* text */
     --text-hi: #f5f3ff;
