@@ -24,7 +24,6 @@ function LoginPage() {
 
     return (
         <div className="login-container">
-            {/* لوقو لوميا فوق العنوان */}
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "16px" }}>
                 <img
                     src={LumiaMascot}
@@ -32,9 +31,8 @@ function LoginPage() {
                     style={{ width: "80px", height: "80px", borderRadius: "50%", objectFit: "cover", marginBottom: "8px" }}
                 />
             </div>
-
-            <h1>Login</h1>
-
+            <h1>Log in To Lumia</h1>
+            
             <form onSubmit={handleSubmit}>
                 <input
                     type="email"
@@ -43,7 +41,6 @@ function LoginPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                 />
-
                 <input
                     type="password"
                     placeholder="Enter your password"
@@ -51,12 +48,9 @@ function LoginPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                 />
-
                 {error && <p className="form-error">{error}</p>}
-
-                <button type="submit">Login</button>
+                <button type="submit">Log in</button>
             </form>
-
             <p className="auth-switch">
                 Don't have an account? <Link to="/signup">Sign Up</Link>
             </p>

@@ -72,7 +72,9 @@ function ModelsPage() {
     return (
         <div className="container">
             <h1>Browse models</h1>
-            <SearchBar search={search} setSearch={setSearch} />
+            <div className="search-bar-wrap">
+                <SearchBar search={search} setSearch={setSearch} />
+            </div>
             <FilterPanel
                 provider={provider} setProvider={setProvider}
                 type={type} setType={setType}

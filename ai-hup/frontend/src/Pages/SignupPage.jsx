@@ -36,7 +36,9 @@ function SignupPage() {
                     style={{ width: "80px", height: "80px", borderRadius: "50%", objectFit: "cover", marginBottom: "8px" }}
                 />
             </div>
+            
             <h1>Create Account</h1>
+            
             <form onSubmit={handleSubmit}>
                 <input
                     type="email"
@@ -57,7 +59,7 @@ function SignupPage() {
                 <button type="submit">Sign Up</button>
             </form>
             <p className="auth-switch">
-                Already have an account? <Link to="/login">Login</Link>
+                Already have an account? <Link to="/login">Log in</Link>
             </p>
         </div>
     );

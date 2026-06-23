@@ -4,8 +4,6 @@ import TagManager from "../components/TagManager.jsx";
 import VisibilityToggle from "../components/VisibilityToggle.jsx";
 import { AuthContext } from "../AuthContext.jsx";
  
-// تغيير: التوكن الحين يجي من "token" بالسياق مباشرة (مو "user.token" -
-// لأن AuthContext الجديد يخزن التوكن لحاله، منفصل عن بيانات المستخدم).
 function AdminDashboard() {
   const { token } = useContext(AuthContext);
   const [models, setModels] = useState([]);
@@ -30,7 +28,6 @@ function AdminDashboard() {
  
   useEffect(() => {
     loadModels();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
  
   const toggleVisible = (model) => {
@@ -145,5 +142,4 @@ function AdminDashboard() {
     </div>
   );
 }
- 
 export default AdminDashboard;

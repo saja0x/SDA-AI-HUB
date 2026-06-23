@@ -3,7 +3,7 @@
     display: flex;
     flex-direction: column;
 }
- 
+
 .upperSide {
     background: var(--surface);
     border-bottom: 1px solid var(--border-soft);
@@ -13,21 +13,21 @@
     padding: 20px;
     text-align: center;
 }
- 
+
 .upperTop {
     display: flex;
     align-items: center;
     gap: 12px;
     margin-bottom: 15px;
 }
- 
+
 .titleUp {
     display: flex;
     flex-direction: column;
     gap: 5px;
     margin-bottom: 15px;
 }
- 
+
 .titleUp h1 {
     font-size: 28px;
     font-weight: 800;
@@ -36,20 +36,17 @@
     background-clip: text;
     -webkit-text-fill-color: transparent;
 }
- 
+
 .titleDown h2 {
     font-size: 16px;
     color: var(--text-lo);
     font-weight: 400;
 }
- 
+
 .MainSide {
     flex: 1;
     display: flex;
     flex-direction: row;
-    /* تغيير: justify-content: center يخلي المحتوى يتمركز بالنص دائمًا -
-       لو الموديل ما اختير بعد، قسم التعليمات يطلع فاضي، فبطاقة الشات
-       تتمركز لحالها بدل ما تلتصق باليسار وتسيب فراغ كبير باليمين */
     justify-content: center;
     align-items: flex-start;
     gap: 24px;
@@ -57,16 +54,22 @@
     background: var(--void);
     overflow-y: auto;
 }
- 
+
+/* ✅ الشات يبقى ثابت ما يتحرك */
+.MainSide > *:first-child {
+    position: sticky;
+    top: 30px;
+}
+
 @media (max-width: 768px) {
     .MainSide {
         flex-direction: column;
         align-items: center;
     }
-    .upperSide {
-        padding: 10px;
+    .MainSide > *:first-child {
+        position: relative;
+        top: 0;
     }
-    .AllAi {
-        flex-wrap: wrap;
-    }
+    .upperSide { padding: 10px; }
+    .AllAi { flex-wrap: wrap; }
 }
