@@ -81,7 +81,7 @@ function RecommenderChat() {
       <div className='chat-header'>
         <div className='head-info'>
           <img src={LumiaMascot} alt="Lumia" className="Sparkle" />
-          <h2 className='logo-text'>ChatBot</h2>
+          <h2 className='logo-text'>Chat Bot</h2>
         </div>
       </div>
 

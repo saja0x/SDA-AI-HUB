@@ -1,10 +1,19 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import './ChatInterface.css';
 import LumiaMascot from '../assets/Lumia-mascot.png';
-import { AuthContext } from '../AuthContext.jsx';
-import { apiRequest } from '../api.js';
+import { SiOpenai, SiGooglegemini, SiAnthropic, SiMeta } from "react-icons/si";
 
 const MESSAGE_LIMIT = 10;
+
+const getProviderIcon = (name) => {
+  if (!name) return null;
+  const n = name.toLowerCase();
+  if (n.includes("gpt"))    return <SiOpenai       size={22} color="#10a37f" />;
+  if (n.includes("claude")) return <SiAnthropic    size={22} color="#6c5ce7" />;
+  if (n.includes("gemini")) return <SiGooglegemini size={22} color="#4285F4" />;
+  if (n.includes("llama"))  return <SiMeta         size={22} color="#1f78ff" />;
+  return "🤖";
+};
 
 function WarningIcon() {
   return (
@@ -16,8 +25,8 @@ function WarningIcon() {
 }
 
 function ChatInterface({ model }) {
-  const { token } = useContext(AuthContext);
   const modelName = model?.name || null;
+  const providerIcon = getProviderIcon(modelName);
 
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
@@ -31,15 +40,18 @@ function ChatInterface({ model }) {
       setLimitReached(false);
       return;
     }
+    const token = localStorage.getItem("token");
     if (!token) return;
-
-    apiRequest(`/playground/usage/${model.id}`, { token })
+    fetch(`http://127.0.0.1:8000/playground/usage/${model.id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((r) => r.json())
       .then((data) => {
         setRemaining(data.remaining ?? MESSAGE_LIMIT);
         setLimitReached((data.remaining ?? MESSAGE_LIMIT) <= 0);
       })
       .catch(() => {});
-  }, [model?.id, token]);
+  }, [model?.id]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -49,19 +61,15 @@ function ChatInterface({ model }) {
     setInput('');
     setLoading(true);
 
-    // نستخدم fetch هنا بشكل مباشر لأننا نحتاج نتحقق من status 429
-    // قبل ما نحوّل الرد لـ JSON — apiRequest يرمي error على أي رد مو 2xx
+    const token = localStorage.getItem("token");
+
     fetch("http://127.0.0.1:8000/playground/chat", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
-      body: JSON.stringify({
-        message: userText,
-        model: modelName || "AI",
-        model_id: model?.id,
-      }),
+      body: JSON.stringify({ message: userText, model: modelName || "AI", model_id: model?.id }),
     })
       .then((res) => {
         if (res.status === 429) {
@@ -69,11 +77,7 @@ function ChatInterface({ model }) {
           setRemaining(0);
           setMessages((prev) => [...prev,
             { text: userText, sender: "user" },
-            {
-              text: `You've reached the ${MESSAGE_LIMIT}-message limit for this model. Try exploring other models!`,
-              sender: "bot",
-              isLimit: true,
-            },
+            { text: `You've reached the ${MESSAGE_LIMIT}-message limit for this model. Try exploring other models!`, sender: "bot", isLimit: true },
           ]);
           return null;
         }
@@ -103,7 +107,11 @@ function ChatInterface({ model }) {
     <div className="ChatInterface">
       <div className='chat-header'>
         <div className='head-info'>
-          <img src={LumiaMascot} alt={modelName || 'PlayGround'} className="Sparkle" />
+          {modelName ? (
+            <span style={{ display: "flex", alignItems: "center" }}>{providerIcon}</span>
+          ) : (
+            <img src={LumiaMascot} alt="Lumia" className="Sparkle" />
+          )}
           <h2 className='logo-text'>{modelName || 'PlayGround'}</h2>
         </div>
         {modelName && (
@@ -121,7 +129,7 @@ function ChatInterface({ model }) {
       <div className="Chat-box">
         {modelName ? (
           <div className='AimessageAppear'>
-            <img src={LumiaMascot} className="Sparkle" alt={modelName} />
+            <span style={{ display: "flex", alignItems: "center", flexShrink: 0 }}>{providerIcon}</span>
             <p className='messageAi'>Hey! I'm {modelName}</p>
           </div>
         ) : (
