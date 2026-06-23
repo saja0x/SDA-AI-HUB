@@ -1,33 +1,50 @@
 # 🤖 AI Hub
 
-A platform to discover, compare, and chat with different AI models (GPT, Claude, Gemini, DeepSeek, and more) in one place.
+# AI Model Hub — Lumia
 
-## ✨ Features
+A full-stack web platform for discovering, comparing, and interacting with AI models.
 
-- Browse and search AI models with filters
-- Compare models side by side
-- Chat directly with models in the Playground
-- Chatbot that recommends the best model for your use case
-- User login/register with admin dashboard
+## Team
+- Saja Alkhalaf
+- Reem Mejrashi
+- May Alahmari  
 
-## 🧰 Tech Stack
 
-- Frontend: React + Vite
-- Backend: FastAPI + SQLite
-- AI: OpenRouter API
+## Tech Stack
+- **Frontend:** React + Vite
+- **Backend:** FastAPI (Python)
+- **Database:** SQLite
+- **AI Chatbot:** GPT-4o-mini via OpenRouter
+- **Auth:** bcrypt + JWT
 
-## 🚀 How to Run
+## Features
+- Browse and search 10 AI models with full specs
+- Filter by provider, type, pricing, modality, and use case
+- Side-by-side model comparison
+- AI-powered recommendation chatbot
+- Live playground (10 messages per model)
+- Admin dashboard with full CRUD
+- Public REST API
+- Benchmark page
 
-Backend:
+## Setup
 
-    cd ai-hup/backend
-    python -m venv venv
-    venv\Scripts\activate
-    pip install fastapi uvicorn sqlalchemy python-dotenv requests
-    uvicorn main:app --reload --port 8000
+### Backend
+```bash
+cd backend
+pip install -r requirements.txt
+python create_admin.py
+uvicorn main:app --reload
+```
 
-Frontend:
+### Frontend
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-    cd ai-hup/frontend
-    npm install
-    npm run dev
+### Environment
+Create a `.env` file in the backend folder:
+### Environment
+Create a `.env` file in the backend folder:
