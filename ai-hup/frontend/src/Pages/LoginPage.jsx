@@ -32,7 +32,9 @@ function LoginPage() {
                     style={{ width: "80px", height: "80px", borderRadius: "50%", objectFit: "cover", marginBottom: "8px" }}
                 />
             </div>
+
             <h1>Login</h1>
+
             <form onSubmit={handleSubmit}>
                 <input
                     type="email"
@@ -41,6 +43,7 @@ function LoginPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     required
                 />
+
                 <input
                     type="password"
                     placeholder="Enter your password"
@@ -48,9 +51,12 @@ function LoginPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                 />
+
                 {error && <p className="form-error">{error}</p>}
+
                 <button type="submit">Login</button>
             </form>
+
             <p className="auth-switch">
                 Don't have an account? <Link to="/signup">Sign Up</Link>
             </p>
