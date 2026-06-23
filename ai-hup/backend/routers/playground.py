@@ -1,15 +1,4 @@
-"""
-routers/playground.py
------------------------
-مسارات البلاي قراوند. كل طلب يمر بخطوتين قبل ما يوصل للـ LLM:
-  1. التحقق من التوكن (يعني تسجيل دخول إجباري - Depends(get_current_user))
-  2. فحص ليمت الرسايل: لو المستخدم وصل 10 رسايل لهذا الموديل → رفض فوري
 
-الرقم 10 محفوظ بثابت (MESSAGE_LIMIT) يسهّل تغييره لاحقًا من مكان واحد.
-
-بونص (من زميلة أخرى بالفريق): Public API endpoints تسمح لأي تطبيق خارجي
-يجيب قائمة الموديلات أو يبحث عن موديل بالاسم - بدون تسجيل دخول.
-"""
 import os
 import requests
 
@@ -28,7 +17,7 @@ load_dotenv()
 
 router = APIRouter(prefix="/playground", tags=["playground"])
 
-MESSAGE_LIMIT = 10  # الحد الأقصى لكل مستخدم لكل موديل - ثابت للأبد
+MESSAGE_LIMIT = 10 
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
 
 
@@ -49,7 +38,6 @@ class ChatRequest(BaseModel):
     model_id: int | None = None
 
 
-# ---------- مسارات البلاي قراوند (تحتاج تسجيل دخول) ----------
 
 @router.get("/models")
 def list_playground_models(db: Session = Depends(get_db)):
@@ -64,13 +52,8 @@ def chat(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    """
-    إرسال رسالة للموديل المختار. قبل ما يوصل للـ LLM:
-      1. نتحقق من الليمت
-      2. لو ما وصل → نرسل ونزيد العداد
-      3. لو وصل 10 → نرفض برسالة واضحة
-    """
-    # --- فحص الليمت ---
+    
+   
     model_id = req.model_id
     if model_id is None:
         model_obj = db.query(Model).filter(Model.name == req.model).first()
@@ -170,10 +153,6 @@ def get_usage(
         "remaining": max(0, MESSAGE_LIMIT - used),
     }
 
-
-# ---------- Public API (بونص - من فكرة زميلة بالفريق) ----------
-# هذي المسارات ما تحتاج تسجيل دخول - مخصصة لأي تطبيق خارجي يبي
-# يجيب قائمة الموديلات أو يبحث عن موديل بالاسم (Stretch Goal: API for external access)
 
 @router.get("/api/v1/models")
 def get_all_models_public(db: Session = Depends(get_db)):

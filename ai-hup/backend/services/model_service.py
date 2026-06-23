@@ -28,7 +28,7 @@ def _model_to_dict(m: Model) -> dict:
  
  
 def get_all_models():
-    """الموديلات الظاهرة بس (اللي visible=True) - تستخدم بالصفحات العامة"""
+    
     session = SessionLocal()
     try:
         rows = session.query(Model).filter(Model.visible == True).all()  # noqa: E712

@@ -1,10 +1,4 @@
-"""
-routers/admin.py
------------------
-كل مسارات لوحة تحكم الأدمن: إضافة/تعديل/حذف موديلات، وإدارة التاجات.
-كل مسار هنا محمي بـ require_admin (من security.py) - يعني ما يشتغل
-إلا لو المستخدم مسجل دخول وحسابه دوره "admin" فعليًا بقاعدة البيانات.
-"""
+
 from fastapi import APIRouter, Depends
  
 from schemas import ModelInput
@@ -21,11 +15,11 @@ from services.tag_service import get_all_tags, create_tag, delete_tag
 router = APIRouter(prefix="/admin", tags=["admin"])
  
  
-# ---------- الموديلات ----------
+
  
 @router.get("/models")
 def list_all_models(current_admin: User = Depends(require_admin)):
-    """يرجع كل الموديلات بدون استثناء (حتى المخفية) - تستخدمها لوحة الأدمن."""
+  
     return get_all_models_admin()
  
  
@@ -36,7 +30,6 @@ def add_model(data: ModelInput, current_admin: User = Depends(require_admin)):
  
 @router.put("/models/{id}")
 def edit_model(id: int, data: ModelInput, current_admin: User = Depends(require_admin)):
-    # exclude_unset=True: نحدّث بس الحقول اللي فعلاً انبعثت من الفرونت اند
     return update_model(id, data.dict(exclude_unset=True))
  
  
@@ -45,7 +38,7 @@ def remove_model(id: int, current_admin: User = Depends(require_admin)):
     return delete_model(id)
  
  
-# ---------- التاجات ----------
+
  
 @router.get("/tags")
 def list_tags(current_admin: User = Depends(require_admin)):

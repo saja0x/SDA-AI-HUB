@@ -1,10 +1,6 @@
 import React from 'react';
 import './SampleCodeBlock.css'
  
-// تغيير كبير: قبل كذا الكود كان مكتوب لـ3 أسماء قديمة بس ("Gemenai",
-// "Gbt-4", "Poe") ما تطابق أسماء الموديلات الحقيقية - يعني يطلع فاضي
-// لأي موديل حقيقي. الحين الكود يتولّد ديناميكيًا باستخدام openrouter_id
-// الحقيقي للموديل المختار، فيشتغل لأي موديل (حتى اللي يضيفه الأدمن جديد).
 function SampleCodeBlock({ model }) {
   if (!model) return null;
  

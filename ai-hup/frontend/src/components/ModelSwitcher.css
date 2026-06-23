@@ -22,8 +22,7 @@
   background: var(--surface-3);
   color: var(--text-hi);
 }
- 
-/* الموديل المختار حاليًا يطلع بتدرج بنفسجي مميز */
+
 .AllAi button.active {
   background: var(--grad-primary);
   color: var(--text-hi);

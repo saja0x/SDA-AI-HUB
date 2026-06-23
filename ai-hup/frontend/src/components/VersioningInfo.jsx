@@ -1,6 +1,4 @@
-// تغيير: قبل كذا كان يعرض تاريخ إصدار واحد بس. الحين يعرض كل سجل
-// الإصدارات لو متوفر (model.versions) - قاعدة البيانات أصلًا فيها جدول
-// كامل لهذا الغرض (model_versions)، بس ما كان يوصلها أي بيانات قبل.
+
 function VersioningInfo({ model }) {
   const versions = model.versions || [];
  

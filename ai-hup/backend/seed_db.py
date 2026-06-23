@@ -1,10 +1,4 @@
-"""
-سكربت تعبئة قاعدة البيانات بالبيانات الأولية من models_seed.json
-يشتغل تلقائيًا عند تشغيل السيرفر (main.py) - وما يكرر التعبئة لو البيانات موجودة أصلًا
- 
-تغيير: أضفنا استيراد usage_limit عشان SQLAlchemy يشوف الجدول الجديد
-ويسويه تلقائيًا بأول تشغيل (مو محتاجين نحذف app.db).
-"""
+
 import json
 import os
  
@@ -15,7 +9,7 @@ from models.model_version import ModelVersion
  
  
 def seed_database():
-    # ضيفنا usage_limit هنا عشان init_db يلقاه ويعمل الجدول لو ما كان موجود
+  
     from models import usage_limit  # noqa: F401
  
     init_db()

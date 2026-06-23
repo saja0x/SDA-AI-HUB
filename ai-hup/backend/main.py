@@ -33,13 +33,9 @@ app.add_middleware(
  
 @app.on_event("startup")
 def on_startup():
-    # ينشئ جداول قاعدة البيانات (أول مرة بس) ويعبيها بالبيانات الأولية من models_seed.json
     seed_database()
  
  
-# ⚠️ ترتيب التسجيل مهم: models.py فيه GET /models/search (مسار ثابت)
-# و model_detail.py فيه GET /models/{model_id} (مسار متغير)
-# لازم الثابت يسجل أول وإلا FastAPI يفهم "search" كأنه model_id بالغلط
 app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(models.router)

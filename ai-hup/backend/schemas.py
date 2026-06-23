@@ -1,27 +1,13 @@
-"""
-schemas.py
-----------
-نماذج Pydantic لكل البيانات اللي تدخل وتطلع من الـ API. FastAPI يستخدمها
-يتحقق تلقائيًا من البيانات قبل ما توصل لأي كود، ويصيغ الردود.
- 
-ملاحظة: Schemas مو نفسها نماذج قاعدة البيانات (بملف models/). النماذج
-توصف الجداول، والـ Schemas توصف شكل بيانات الـ API - هذا الفرق يخلينا
-مثلًا نستقبل كلمة مرور نصية وقت التسجيل، بس أبدًا ما نرجعها بأي رد.
-"""
+
 from typing import List, Optional
 from pydantic import BaseModel, EmailStr, Field
 
-
-# ============== المصادقة (Authentication) ==============
 
 class UserCreate(BaseModel):
     """Body of POST /auth/register."""
 
     email: EmailStr
     password: str = Field(min_length=6)
-    # الدور ما يجي من المستخدم — يتحدد بالباكند دايماً كـ "user"
-    # الأدمن يتضاف من التيرمنل بس عبر create_admin.py
-
 
 class UserLogin(BaseModel):
     """Body of POST /auth/login."""
@@ -30,7 +16,6 @@ class UserLogin(BaseModel):
 
 
 class UserOut(BaseModel):
-    """شكل بيانات المستخدم اللي نرجعها - بدون كلمة المرور المشفّرة إطلاقًا."""
     id: int
     email: EmailStr
     role: str
@@ -39,12 +24,11 @@ class UserOut(BaseModel):
 
 
 class Token(BaseModel):
-    """رد POST /auth/login: التوكن + نوعه."""
+
     access_token: str
     token_type: str = "bearer"
 
 
-# ============== الموديلات (Models) ==============
 
 class ModelInput(BaseModel):
     """كل الحقول اللي يقدر الأدمن يعبيها لما يضيف أو يعدّل موديل."""

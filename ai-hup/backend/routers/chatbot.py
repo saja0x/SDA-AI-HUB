@@ -1,21 +1,4 @@
-"""
-routers/chatbot.py
---------------------
-شات بوت ذكي يرشح الموديل الأنسب بناءً على طلب المستخدم الحقيقي.
 
-كيف يشتغل:
-  1. المستخدم يكتب أي شي (عربي، إنجليزي، عامية، أخطاء، اختصارات...)
-  2. نجيب قائمة كل الموديلات المتاحة من قاعدة البيانات (الاسم، الوصف،
-     الاستخدامات، السعر، الدقة، السرعة...)
-  3. نرسل طلب المستخدم + قائمة الموديلات لـ GPT-4o-mini
-  4. GPT يقرأ الطلب ويقارن بين الموديلات ويختار الأنسب فعلاً مع شرح قصير
-  5. لو فشل الاتصال بـ GPT: نرجع للطريقة البسيطة (بحث بكلمات مفتاحية)
-     كـ fallback عشان الشات بوت ما يوقف نهائياً
-
-الفرق عن الطريقة القديمة:
-  - قبل: نبحث عن أول كلمة تطابق → غبي ومحدود
-  - الحين: GPT يفهم السياق الكامل ويختار الأنسب فعلاً
-"""
 import os
 import requests
 
@@ -34,10 +17,7 @@ class RecommendRequest(BaseModel):
 
 
 def get_models_summary(models) -> str:
-    """
-    يحوّل قائمة الموديلات من قاعدة البيانات لنص منظم يقدر GPT يفهمه
-    ويقارن بينهم بناءً على الطلب.
-    """
+   
     lines = []
     for m in models:
         provider = m.provider.name if m.provider else "Unknown"
@@ -122,14 +102,14 @@ def recommend_with_gpt(user_request: str, models_summary: str, model_names: list
                 elif part.startswith("REASON:"):
                     reason = part.replace("REASON:", "").strip()
 
-        # نتحقق إن الاسم موجود فعلاً بقائمة موديلاتنا
+  
         if model_name and model_name in model_names:
             return {"model_name": model_name, "reason": reason}
 
-        return None  # الرد غير صالح → يتفعّل الـ fallback
+        return None  
 
     except Exception:
-        return None  # أي خطأ → يتفعّل الـ fallback
+        return None  
 
 
 def fallback_recommend(user_request: str, models: list):
@@ -155,17 +135,12 @@ def fallback_recommend(user_request: str, models: list):
             best_score = score
             best_model = m
 
-    # لو ما لقينا تطابق، نرجع أول موديل بالقائمة
     return best_model or (models[0] if models else None)
 
 
 @router.post("/recommend")
 def recommend_model(req: RecommendRequest, db: Session = Depends(get_db)):
-    """
-    المسار الرئيسي للتوصية. يمر بمرحلتين:
-      1. نحاول بـ GPT (ذكي، يفهم أي لغة وسياق)
-      2. لو فشل GPT، نرجع للـ fallback (بحث بكلمات مفتاحية + سكور)
-    """
+  
     models = db.query(Model).filter(Model.visible == True).all()
 
     if not models:
@@ -174,7 +149,6 @@ def recommend_model(req: RecommendRequest, db: Session = Depends(get_db)):
     model_names = [m.name for m in models]
     models_summary = get_models_summary(models)
 
-    # المرحلة 1: نحاول بـ GPT
     gpt_result = recommend_with_gpt(req.use_case, models_summary, model_names)
 
     if gpt_result:
@@ -183,7 +157,7 @@ def recommend_model(req: RecommendRequest, db: Session = Depends(get_db)):
             "reason": gpt_result["reason"],
         }
 
-    # المرحلة 2: fallback بالكلمات المفتاحية
+
     best = fallback_recommend(req.use_case, models)
     provider = best.provider.name if best and best.provider else ""
 

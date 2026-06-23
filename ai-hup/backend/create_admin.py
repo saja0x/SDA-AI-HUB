@@ -1,16 +1,4 @@
-"""
-create_admin.py
------------------
-سكريبت يشتغل من التيرمنل مباشرة لإضافة حساب أدمن.
-ما يحتاج تشغيل السيرفر — يتصل مباشرة بقاعدة البيانات.
 
-الاستخدام:
-    python create_admin.py
-
-ملاحظة أمنية: هذا السكريبت يشتغل بس لو عندك وصول مباشر للسيرفر
-(تقدري تشغّلين أوامر بالتيرمنل) — هذا هو المقصود بالأمان:
-الأدمن ما يُضاف من واجهة الموقع، بل من الشخص المسؤول عن السيرفر.
-"""
 import sys
 import os
 
@@ -23,7 +11,7 @@ from security import hash_password
 
 
 def create_admin(email: str, password: str):
-    """يضيف حساب أدمن جديد لقاعدة البيانات."""
+    
     init_db()
     db = SessionLocal()
 
@@ -34,13 +22,13 @@ def create_admin(email: str, password: str):
             if existing.role == "admin":
                 print(f"⚠️  {email} مسجل بالفعل كأدمن.")
             else:
-                # لو موجود كـ user، نرقّيه لأدمن
+           
                 existing.role = "admin"
                 db.commit()
                 print(f"✅ تم ترقية {email} لأدمن.")
             return
 
-        # نضيف الأدمن الجديد
+      
         admin = User(
             email=email,
             hashed_password=hash_password(password),

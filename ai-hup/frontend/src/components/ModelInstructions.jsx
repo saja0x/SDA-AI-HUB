@@ -9,7 +9,6 @@ function CheckIcon() {
   );
 }
  
-// تعليمات استخدام عامة حسب نوع/مزوّد الموديل، تشتغل لأي موديل (مو بس 3 أسماء ثابتة).
 function ModelInstructions({ model }) {
   if (!model) return null;
  

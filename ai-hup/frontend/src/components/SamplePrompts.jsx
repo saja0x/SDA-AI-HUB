@@ -1,7 +1,5 @@
 import React from "react";
- 
-// أيقونة "محادثة" مكتوبة هنا مباشرة (بدون ملف منفصل)
-function ChatIcon() {
+ function ChatIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style={{ flexShrink: 0 }}>
       <path

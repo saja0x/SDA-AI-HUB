@@ -3,10 +3,6 @@ import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../AuthContext.jsx";
 import LumiaMascot from "../assets/Lumia-mascot.png";
  
-// تغيير أمني: شلنا خيار اختيار الدور (Role) من واجهة التسجيل.
-// قبل كذا أي حد يقدر يختار "admin" من القائمة — هذا خطر أمني حقيقي.
-// الحين كل حساب جديد يصير "user" تلقائياً بدون أي خيار.
-// الأدمن يُضاف من التيرمنل مباشرة بـ: python create_admin.py
 function SignupPage() {
     const { register } = useContext(AuthContext);
     const navigate = useNavigate();
@@ -19,7 +15,6 @@ function SignupPage() {
         e.preventDefault();
         setError("");
         try {
-            // الدور "user" ثابت — ما يجي من المستخدم
             await register(email, password, "user");
             navigate("/");
         } catch (err) {

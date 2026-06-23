@@ -1,10 +1,4 @@
-// =========================
-// Comparison Table Component
-// Shows differences between selected models
-// =========================
-// تغيير: كان جدول HTML بسيط (border="1") بدون أي تنسيق أو ألوان - يطلع
-// أبيض وأسود بينما باقي الموقع بنفسجي غامق. الحين يستخدم ملف CSS مخصص
-// بنفس متغيرات الألوان المستخدمة بكل مكان ثاني بالموقع.
+
 import "./ComparisonTable.css";
  
 function ComparisonTable({ selected }) {
@@ -17,7 +11,6 @@ function ComparisonTable({ selected }) {
           <tr>
             <th>Feature</th>
  
-            {/* Dynamic columns for each selected model */}
             {selected.map((m) => (
               <th key={m.id}>{m.name}</th>
             ))}

@@ -14,12 +14,8 @@ class User(Base):
  
     id = Column(Integer, primary_key=True, index=True)
  
-    # unique=True يخلي قاعدة البيانات نفسها ترفض أي إيميل مكرر، مو بس كودنا
     email = Column(String, unique=True, index=True, nullable=False)
  
-    # ما نخزن كلمة المرور الحقيقية أبدًا - بس نسخة مشفّرة بـ bcrypt
     hashed_password = Column(String, nullable=False)
  
-    # RBAC (التحكم بالصلاحيات حسب الدور) بأبسط شكل: عمود نصي "user" أو "admin".
-    # أي route يحتاج صلاحية أدمن يتحقق من هذي القيمة قبل ما يسمح بالطلب.
     role = Column(String, default="user", nullable=False)

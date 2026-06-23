@@ -63,7 +63,7 @@ function ProfilePage() {
           marginBottom: "24px",
         }}
       >
-        {/* تغيير: أيقونة لوميا بدل دائرة الحرف الأول */}
+      
         <img
           src={LumiaMascot}
           alt="Lumia"

@@ -29,7 +29,7 @@ function AuthProvider({ children }) {
       body: { email, password },
     });
     localStorage.setItem("token", data.access_token);
-    setToken(data.access_token); // يشغّل الـ useEffect فوق، اللي يجيب بيانات المستخدم
+    setToken(data.access_token); 
   }
  
   async function register(email, password, role) {

@@ -1,10 +1,4 @@
-"""
-services/admin_service.py
----------------------------
-كل العمليات اللي يحتاجها الأدمن على الموديلات: إضافة، تعديل، حذف، وعرض الكل
-(حتى المخفية منها). هذا الملف لا يتحقق من الصلاحيات بنفسه - التحقق يصير
-بملف auth_utils.py قبل ما يوصل الطلب لهنا أصلًا.
-"""
+
 from database import SessionLocal
 from models.model import Model
 from models.provider import Provider
@@ -46,7 +40,7 @@ def _model_to_dict(m: Model) -> dict:
  
  
 def get_all_models_admin():
-    """كل الموديلات بدون استثناء (حتى المخفية) - تستخدم بلوحة الأدمن بس."""
+    
     session = SessionLocal()
     try:
         rows = session.query(Model).all()
@@ -109,16 +103,13 @@ def update_model(model_id, data):
         if not model_row:
             return {"error": f"Model {model_id} not found"}
  
-        data = dict(data)  # نسخة عشان نقدر نشيل منها provider بدون ما نأثر على الأصل
+        data = dict(data)  
  
         if "provider" in data:
             provider_name = (data.pop("provider") or "").strip()
             if provider_name:
                 model_row.provider_id = _get_or_create_provider(session, provider_name)
  
-        # نحدث بس الحقول اللي فعلاً انبعثت من الفرونت اند
-        # (هذا بالذات هو اللي يخلي زر "Visible/Hidden" يحفظ فعليًا بقاعدة البيانات،
-        # لأنه يرسل بس {"visible": true/false} وهذا الكود يطبقها مباشرة)
         for key, value in data.items():
             if hasattr(model_row, key):
                 setattr(model_row, key, value)
