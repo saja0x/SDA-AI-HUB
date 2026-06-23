@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { SiOpenai, SiGooglegemini, SiAnthropic } from "react-icons/si";
+import { SiOpenai, SiGooglegemini, SiAnthropic, SiMeta } from "react-icons/si";
 
 function ModelCard({
     id = "",
@@ -9,16 +9,22 @@ function ModelCard({
     description = "",
     tags = [],
     accuracy,
+    latency,
     showAccuracy
 }) {
     const navigate = useNavigate();
 
+    const [rating, setRating] = useState(0);
+    const [hover, setHover] = useState(0);
+
     const safeTags = Array.isArray(tags) ? tags : [];
 
-    const getProviderIcon = (provider) => {
-        if (provider === "OpenAI") return <SiOpenai color="#10a37f" />;
-        if (provider === "Google") return <SiGooglegemini color="#4285F4" />;
-        if (provider === "Anthropic") return <SiAnthropic color="#6c5ce7" />;
+    // ⭐ ICON SYSTEM (covers ALL your models safely)
+    const getProviderIcon = (name) => {
+        if (name.toLowerCase().includes("gpt")) return <SiOpenai color="#10a37f" />;
+        if (name.toLowerCase().includes("claude")) return <SiAnthropic color="#6c5ce7" />;
+        if (name.toLowerCase().includes("gemini")) return <SiGooglegemini color="#4285F4" />;
+        if (name.toLowerCase().includes("llama")) return <SiMeta color="#1f78ff" />;
         return "🤖";
     };
 
@@ -32,66 +38,75 @@ function ModelCard({
     };
 
     return (
-        <div className="card" onClick={goToDetails} role="button" tabIndex={0}>
+        <div className="card" onClick={goToDetails}>
 
+            {/* NAME + ICON */}
             <h3>
-                {getProviderIcon(provider)} {name}
+                {getProviderIcon(name)} {name}
             </h3>
 
+            {/* PROVIDER */}
             <p>
-                <strong>Provider:</strong> {getProviderIcon(provider)} {provider}
+                <strong>Provider:</strong> {provider}
             </p>
 
-            <p>{description}</p>
+            {/* ACCURACY + LATENCY (MAINTAINED - NO DELETION) */}
+            <p>Accuracy: {accuracy}%</p>
+            <p>Latency: {latency}</p>
 
+            {/* TAGS */}
             <div>
                 {safeTags.map((tag, index) => (
                     <span key={index}>#{tag}</span>
                 ))}
             </div>
 
-            {safeTags.length > 0 && (
-                <p className="use-line">
-                    Use: {safeTags.join(", ")}
-                </p>
-            )}
+            {/* ⭐ USER RATING */}
+            <div className="rating-box">
+                <p>Rate this model:</p>
 
-            {showAccuracy && accuracy !== undefined && (
-                <p className="accuracy-badge">
-                    Accuracy: {accuracy}%
-                </p>
-            )}
+                <div className="stars">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                        <span
+                            key={star}
+                            style={{
+                                cursor: "pointer",
+                                fontSize: "20px",
+                                color:
+                                    star <= (hover || rating)
+                                        ? "#f5b301"
+                                        : "#ccc"
+                            }}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setRating(star);
+                            }}
+                            onMouseEnter={() => setHover(star)}
+                            onMouseLeave={() => setHover(0)}
+                        >
+                            ★
+                        </span>
+                    ))}
+                </div>
 
+                {rating > 0 && (
+                    <p style={{ fontSize: "12px", color: "gray" }}>
+                        Your rating: {rating} / 5
+                    </p>
+                )}
+            </div>
+
+            {/* BUTTONS */}
             <div className="card-actions">
-                <button
-                    type="button"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        if (id) navigate("/compare", { state: { preselectId: id } });
-                    }}
-                >
+                <button onClick={(e) => { e.stopPropagation(); navigate("/compare", { state: { preselectId: id } }); }}>
                     Compare
                 </button>
 
-                <button
-                    type="button"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        goToDetails();
-                    }}
-                >
+                <button onClick={(e) => { e.stopPropagation(); goToDetails(); }}>
                     Details
                 </button>
 
-                <button
-                    type="button"
-                    onClick={goToPlayground}
-                    style={{
-                        background: "var(--grad-primary)",
-                        color: "#fff",
-                        border: "none"
-                    }}
-                >
+                <button onClick={goToPlayground}>
                     Try ▶
                 </button>
             </div>
