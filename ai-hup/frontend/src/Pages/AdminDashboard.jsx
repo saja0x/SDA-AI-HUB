@@ -19,7 +19,7 @@ function AdminDashboard() {
  
   const loadModels = () => {
     setLoading(true);
-    fetch("http://127.0.0.1:8000/admin/models", { headers: authHeaders })
+    fetch("/api/admin/models", { headers: authHeaders })
       .then((res) => res.json())
       .then((data) => setModels(Array.isArray(data) ? data : []))
       .catch((err) => console.log("API Error:", err))
@@ -31,7 +31,7 @@ function AdminDashboard() {
   }, []);
  
   const toggleVisible = (model) => {
-    fetch(`http://127.0.0.1:8000/admin/models/${model.id}`, {
+    fetch(`/api/admin/models/${model.id}`, {
       method: "PUT",
       headers: authHeaders,
       body: JSON.stringify({
@@ -53,22 +53,29 @@ function AdminDashboard() {
  
   const cancelEdit = () => setEditingId(null);
  
-  const saveEdit = (modelId) => {
-    fetch(`http://127.0.0.1:8000/admin/models/${modelId}`, {
-      method: "PUT",
-      headers: authHeaders,
-      body: JSON.stringify({ name: editName, provider: editProvider }),
+const saveEdit = (modelId) => {
+  const currentModel = models.find((m) => m.id === modelId);
+
+  fetch(`/api/admin/models/${modelId}`, {
+    method: "PUT",
+    headers: authHeaders,
+    body: JSON.stringify({
+      ...currentModel,
+      name: editName,
+      provider: editProvider,
+    }),
+  })
+    .then((res) => res.json())
+    .then(() => {
+      setEditingId(null);
+      loadModels();
     })
-      .then((res) => res.json())
-      .then(() => {
-        setEditingId(null);
-        loadModels();
-      })
-      .catch((err) => console.log("API Error:", err));
-  };
+    .catch((err) => console.log("API Error:", err));
+};
+
  
   const handleDelete = (modelId) => {
-    fetch(`http://127.0.0.1:8000/admin/models/${modelId}`, {
+    fetch(`/api/admin/models/${modelId}`, {
       method: "DELETE",
       headers: authHeaders,
     })

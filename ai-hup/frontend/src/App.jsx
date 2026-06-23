@@ -10,7 +10,7 @@ import ModelsPage from './Pages/ModelsPage.jsx';
 import LoginPage from './Pages/LoginPage.jsx';
 import AdminDashboard from './Pages/AdminDashboard.jsx';
 import SignupPage from './Pages/SignupPage.jsx';
-import ProfilePage from './Pages/ProfilePage.jsx';
+import ProfilePage from './Pages/Profilepage.jsx';  
 
 import ModelDetailPage from './Pages/ModelDetailPage.jsx';
 import ComparisonPage from './Pages/ComparisonPage.jsx';
@@ -37,7 +37,6 @@ function App() {
           <Route path="/signup" element={<SignupPage />} />
 
           <Route path="/profile" element={<RequireAuth><ProfilePage /></RequireAuth>} />
-
           <Route path="/playground" element={<RequireAuth><PlaygroundPage /></RequireAuth>} />
 
           <Route path="/chatbot" element={<ChatbotPage />} />

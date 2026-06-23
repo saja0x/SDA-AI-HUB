@@ -31,7 +31,7 @@ function LoginPage() {
                     style={{ width: "80px", height: "80px", borderRadius: "50%", objectFit: "cover", marginBottom: "8px" }}
                 />
             </div>
-            <h1>Log in To Lumia</h1>
+            <h1>Log in</h1>
             
             <form onSubmit={handleSubmit}>
                 <input

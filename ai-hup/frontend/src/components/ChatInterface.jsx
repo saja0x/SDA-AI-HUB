@@ -42,7 +42,7 @@ function ChatInterface({ model }) {
     }
     const token = localStorage.getItem("token");
     if (!token) return;
-    fetch(`http://127.0.0.1:8000/playground/usage/${model.id}`, {
+    fetch(`/api/playground/usage/${model.id}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((r) => r.json())
@@ -63,7 +63,7 @@ function ChatInterface({ model }) {
 
     const token = localStorage.getItem("token");
 
-    fetch("http://127.0.0.1:8000/playground/chat", {
+    fetch("/api/playground/chat", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

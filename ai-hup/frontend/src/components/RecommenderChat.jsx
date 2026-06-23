@@ -45,13 +45,14 @@ function RecommenderChat() {
       });
   };
 
-  const handleSubmit = (e) => {
+const handleSubmit = (e) => {
     e.preventDefault();
     if (!input.trim()) return;
     const userText = input;
     setInput('');
     sendRequest(userText);
-  };
+    setStep('done');  
+};
 
   const handleUseCaseClick = (label) => {
     setMessages((prev) => [...prev,

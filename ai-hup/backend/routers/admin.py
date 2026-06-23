@@ -25,7 +25,7 @@ def list_all_models(current_admin: User = Depends(require_admin)):
  
 @router.post("/models")
 def add_model(data: ModelInput, current_admin: User = Depends(require_admin)):
-    return create_model(data.dict())
+    return create_model(data.model_dump())
  
  
 @router.put("/models/{id}")

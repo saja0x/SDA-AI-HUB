@@ -55,7 +55,7 @@
     overflow-y: auto;
 }
 
-/* ✅ الشات يبقى ثابت ما يتحرك */
+
 .MainSide > *:first-child {
     position: sticky;
     top: 30px;

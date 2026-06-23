@@ -10,7 +10,7 @@ from models.model_version import ModelVersion
  
 def seed_database():
   
-    from models import usage_limit  # noqa: F401
+    from models import usage_limit  
  
     init_db()
     session = SessionLocal()

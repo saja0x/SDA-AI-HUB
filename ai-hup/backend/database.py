@@ -24,5 +24,5 @@ def get_db():
  
  
 def init_db():
-    from models import model, provider, tag, model_version, user  # noqa: F401
+    from models import model, provider, tag, model_version, user  
     Base.metadata.create_all(bind=engine)

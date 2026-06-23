@@ -28,10 +28,6 @@ function ModelsPage() {
             .catch((err) => console.log("API Error:", err));
     }, []);
 
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [search, provider, type, pricing, modality, openSource, useCase, minContext, sortBy]);
-
     let filtered = allModels.filter((m) => {
         const matchesSearch = m.name.toLowerCase().includes(search.toLowerCase());
         const matchesProvider = provider === "" || m.provider === provider;
@@ -46,7 +42,6 @@ function ModelsPage() {
             useCase === "" ||
             (m.use_cases || []).some((uc) => uc.toLowerCase().includes(useCase.toLowerCase()));
         const matchesContext = minContext === "" || (m.context_window || 0) >= Number(minContext);
-
         return (
             matchesSearch && matchesProvider && matchesType && matchesPricing &&
             matchesModality && matchesOpenSource && matchesUseCase && matchesContext
@@ -96,6 +91,7 @@ function ModelsPage() {
                         description={model.description}
                         tags={model.tags || []}
                         accuracy={model.accuracy}
+                        latency={model.latency}
                         showAccuracy={showAccuracy}
                     />
                 ))}
@@ -108,4 +104,5 @@ function ModelsPage() {
         </div>
     );
 }
+
 export default ModelsPage;

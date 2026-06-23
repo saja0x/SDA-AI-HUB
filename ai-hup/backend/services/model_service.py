@@ -1,7 +1,7 @@
 from database import SessionLocal
 from models.model import Model
- 
- 
+
+
 def _model_to_dict(m: Model) -> dict:
     return {
         "id": m.id,
@@ -25,22 +25,23 @@ def _model_to_dict(m: Model) -> dict:
         "visible": m.visible,
         "openrouter_id": m.openrouter_id,
     }
- 
- 
+
+
 def get_all_models():
-    
     session = SessionLocal()
     try:
-        rows = session.query(Model).filter(Model.visible == True).all()  # noqa: E712
+        rows = session.query(Model).filter(Model.visible == True).all()
         return [_model_to_dict(m) for m in rows]
     finally:
         session.close()
- 
- 
+
+
 def search_models(q):
-    models = get_all_models()
+    q_lower = q.lower()
     return [
-        model
-        for model in models
-        if q.lower() in model["name"].lower()
+        model for model in get_all_models()
+        if q_lower in model["name"].lower()
+        or q_lower in (model.get("description") or "").lower()
+        or any(q_lower in t.lower() for t in (model.get("tags") or []))
+        or any(q_lower in uc.lower() for uc in (model.get("use_cases") or []))
     ]

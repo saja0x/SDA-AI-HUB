@@ -2,26 +2,27 @@ import React, { useState, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { AuthContext } from "../AuthContext.jsx";
 import LumiaMascot from "../assets/Lumia-mascot.png";
- 
+
 function SignupPage() {
     const { register } = useContext(AuthContext);
     const navigate = useNavigate();
- 
+
+    const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
- 
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError("");
         try {
-            await register(email, password, "user");
+            await register(email, password, "user", username);
             navigate("/");
         } catch (err) {
             setError(err.message);
         }
     };
- 
+
     return (
         <div className="login-container">
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "16px" }}>
@@ -31,10 +32,16 @@ function SignupPage() {
                     style={{ width: "80px", height: "80px", borderRadius: "50%", objectFit: "cover", marginBottom: "8px" }}
                 />
             </div>
-            
             <h1>Create Account</h1>
-            
             <form onSubmit={handleSubmit}>
+                <input
+                    type="text"
+                    placeholder="Enter your name"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    minLength={2}
+                    required
+                />
                 <input
                     type="email"
                     placeholder="Enter your email"
@@ -59,5 +66,5 @@ function SignupPage() {
         </div>
     );
 }
- 
+
 export default SignupPage;

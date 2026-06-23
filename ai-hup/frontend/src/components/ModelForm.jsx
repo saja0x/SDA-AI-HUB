@@ -111,7 +111,7 @@ function ModelForm() {
     e.preventDefault();
     setStatus(null);
  
-    fetch("http://127.0.0.1:8000/admin/models", {
+    fetch("/api/admin/models", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

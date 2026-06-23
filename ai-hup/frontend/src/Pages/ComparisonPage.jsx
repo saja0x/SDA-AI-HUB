@@ -18,7 +18,7 @@ export default function ModelComparison() {
   useEffect(() => {
     const preselectId = location.state?.preselectId;
     if (preselectId && models.length > 0) {
-      const match = models.find((m) => m.id === preselectId);
+      const match = models.find((m) => m.id === Number(preselectId));
       if (match) {
         setSelected((prev) =>
           prev.find((m) => m.id === match.id) ? prev : [...prev, match]

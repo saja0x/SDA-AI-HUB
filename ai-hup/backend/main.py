@@ -3,17 +3,17 @@ from fastapi.middleware.cors import CORSMiddleware
  
 from seed_db import seed_database
  
-# راوترز الطالبة الأولى
+
 from routers import auth
 from routers import users
 from routers import models
 from routers import admin
  
-# راوترز الطالبة الثانية
+
 from routers import model_detail
 from routers import comparison
  
-# راوترز الطالبة الثالثة
+
 from routers import playground
 from routers import chatbot
  
