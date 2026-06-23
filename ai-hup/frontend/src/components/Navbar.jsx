@@ -39,10 +39,10 @@ function Navbar() {
       {user ? (
         <>
           <Link to="/profile">Profile</Link>
-          <button onClick={handleLogout}>Logout</button>
+          <button onClick={handleLogout}>Log out</button>
         </>
       ) : (
-        <Link to="/login">Login</Link>
+        <Link to="/login">Log in</Link>
       )}
     </nav>
   );

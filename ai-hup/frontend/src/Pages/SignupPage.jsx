@@ -59,7 +59,7 @@ function SignupPage() {
                 <button type="submit">Sign Up</button>
             </form>
             <p className="auth-switch">
-                Already have an account? <Link to="/login">Login</Link>
+                Already have an account? <Link to="/login">Log in</Link>
             </p>
         </div>
     );

@@ -24,6 +24,11 @@ function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
+        <div className="particles">
+          {Array.from({ length: 15 }).map((_, i) => (
+            <div key={i} className="particle" />
+          ))}
+        </div>
         <Navbar />
         <Routes>
           <Route path="/" element={<HomePage />} />
@@ -33,8 +38,6 @@ function App() {
 
           <Route path="/profile" element={<RequireAuth><ProfilePage /></RequireAuth>} />
 
-          {/* تغيير: البلاي قراوند صار محميًا بتسجيل دخول - ضروري عشان
-              نعرف مين المستخدم ونطبق الليمت على حسابه */}
           <Route path="/playground" element={<RequireAuth><PlaygroundPage /></RequireAuth>} />
 
           <Route path="/chatbot" element={<ChatbotPage />} />
