@@ -14,7 +14,7 @@ from models.user import User
 from security import get_current_user
 
 # للمسج ليميت  يقرا ملف env الي فيه المفتاح 
-load_dotenv()
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '..', '.env'))
 
 router = APIRouter(prefix="/playground", tags=["playground"])
 
