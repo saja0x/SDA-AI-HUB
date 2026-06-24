@@ -13,6 +13,7 @@ from models.usage_limit import UsageLimit
 from models.user import User
 from security import get_current_user
 
+# للمسج ليميت  يقرا ملف env الي فيه المفتاح 
 load_dotenv()
 
 router = APIRouter(prefix="/playground", tags=["playground"])
@@ -21,6 +22,7 @@ MESSAGE_LIMIT = 10
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
 
 
+# جيسون لعشان يفهمه الفرونت
 def _model_to_dict(m):
     return {
         "id": m.id,
@@ -32,13 +34,14 @@ def _model_to_dict(m):
     }
 
 
+#شكل البيانات , سترينق رساله اليوزر
 class ChatRequest(BaseModel):
     message: str
     model: str
     model_id: int | None = None
+# رقمه بالداتا بيس
 
-
-
+#تعرض موديلات بالبلاي قراوند
 @router.get("/models")
 def list_playground_models(db: Session = Depends(get_db)):
     """قائمة الموديلات المرئية فقط عشان يختار منها المستخدم بالبلاي قراوند."""
@@ -46,14 +49,17 @@ def list_playground_models(db: Session = Depends(get_db)):
     return [_model_to_dict(m) for m in models]
 
 
+#يستقبل رساله الفرونت ويرسلها للموديل 
 @router.post("/chat")
 def chat(
     req: ChatRequest,
+    #مهمه عشان محد يكتب . تحقق
     current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db), 
 ):
     
    
+   # رقم المودل من الفرونت
     model_id = req.model_id
     if model_id is None:
         model_obj = db.query(Model).filter(Model.name == req.model).first()
@@ -69,7 +75,8 @@ def chat(
             )
             .first()
         )
-
+        
+      #بو اول مره يسوي سجل له
         if limit_row is None:
             limit_row = UsageLimit(user_id=current_user.id, model_id=model_id, message_count=0)
             db.add(limit_row)

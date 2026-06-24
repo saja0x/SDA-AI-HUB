@@ -4,7 +4,7 @@ import React from 'react';
 import RecommenderChat from '../components/RecommenderChat.jsx';
  
 function ChatbotPage() {
-  return (
+ return (
     <div
       style={{
         display: "flex",

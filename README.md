@@ -1,14 +1,11 @@
-# 🤖 AI Hub
-
 # AI Model Hub — Lumia
 
 A full-stack web platform for discovering, comparing, and interacting with AI models.
 
 ## Team
-- Saja Alkhalaf
 - Reem Mejrashi
 - May Alahmari  
-
+- Saja Alkhalaf
 
 ## Tech Stack
 - **Frontend:** React + Vite
@@ -44,7 +41,5 @@ npm install
 npm run dev
 ```
 
-### Environment
-Create a `.env` file in the backend folder:
 ### Environment
 Create a `.env` file in the backend folder:
