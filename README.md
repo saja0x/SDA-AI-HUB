@@ -3,9 +3,10 @@
 A full-stack web platform for discovering, comparing, and interacting with AI models.
 
 ## Team
+- Saja Alkhalaf
 - Reem Mejrashi
 - May Alahmari  
-- Saja Alkhalaf
+
 
 ## Tech Stack
 - **Frontend:** React + Vite
